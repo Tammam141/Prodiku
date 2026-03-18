@@ -21,8 +21,8 @@ app.register_blueprint(admin_bp)
 # ======================
 # Karena Vercel tidak menjalankan __main__, kita bisa membuat route khusus 
 # atau menjalankan create_all menggunakan app_context di tingkat modul.
-with app.app_context():
-    db.create_all()
+#with app.app_context():
+  #  db.create_all()
 
 # ======================
 # HALAMAN INDEX / HOME
