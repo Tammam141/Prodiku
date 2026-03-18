@@ -7,14 +7,22 @@ from models import (
     PertanyaanSurvei, SurveyJawaban
 )
 from datetime import date
-from admin_routes import admin_bp # <--- 1. IMPORT BLUEPRINT ADMIN
+from admin_routes import admin_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 
-# 2. DAFTARKAN BLUEPRINT ADMIN KE APLIKASI UTAMA
+# Registrasi Blueprint
 app.register_blueprint(admin_bp)
+
+# ======================
+# FUNGSI INISIALISASI DATABASE (Penting untuk Vercel)
+# ======================
+# Karena Vercel tidak menjalankan __main__, kita bisa membuat route khusus 
+# atau menjalankan create_all menggunakan app_context di tingkat modul.
+with app.app_context():
+    db.create_all()
 
 # ======================
 # HALAMAN INDEX / HOME
@@ -24,7 +32,7 @@ def index():
     return render_template('index.html')
 
 # ======================
-# 1. INPUT BOBOT KRITERIA DENGAN VALIDASI
+# 1. INPUT BOBOT KRITERIA
 # ======================
 @app.route('/bobot', methods=['GET', 'POST'])
 def input_bobot():
@@ -40,13 +48,10 @@ def input_bobot():
             error = "Nama harus diisi."
             return render_template('input_bobot.html', kriteria=kriteria, error=error, nama=nama)
 
-        # Cek jika ada bobot yang bernilai 0
         semua_bobot = request.form.getlist('bobot_kriteria')
-        if any(float(b) == 0 for b in semua_bobot):
+        if not semua_bobot or any(float(b) == 0 for b in semua_bobot):
              error = "Semua bobot kriteria harus diisi dan tidak boleh 0."
-             # Mengambil ulang nilai yang sudah diinput untuk ditampilkan kembali di form
-             bobot_values = {f'bobot_{k.kriteria_id}': request.form.get(f'bobot_{k.kriteria_id}') for k in kriteria}
-             return render_template('input_bobot.html', kriteria=kriteria, error=error, nama=nama, bobot_values=bobot_values)
+             return render_template('input_bobot.html', kriteria=kriteria, error=error, nama=nama)
 
         user = User(nama=nama, tipe_user=tipe_user)
         db.session.add(user)
@@ -68,10 +73,10 @@ def input_bobot():
 @app.route('/survey/<int:user_id>', methods=['GET', 'POST'])
 def input_survey(user_id):
     user = User.query.get_or_404(user_id)
+    # Konsistensi urutan pertanyaan berdasarkan ID
     pertanyaan = PertanyaanSurvei.query.order_by(PertanyaanSurvei.pertanyaan_id.asc()).all()
-   
+
     if request.method == 'POST':
-        # Simpan dulu semua jawaban survey
         for p in pertanyaan:
             jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
             if jawaban:
@@ -79,7 +84,6 @@ def input_survey(user_id):
                 db.session.add(jawaban_entry)
         db.session.commit()
 
-        # Hapus penilaian lama jika ada
         PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
 
         mapping = {
@@ -88,7 +92,6 @@ def input_survey(user_id):
             'C': [1, 2, 5]
         }
 
-        # Buat penilaian alternatif berdasarkan jawaban
         all_jawaban = SurveyJawaban.query.filter_by(user_id=user_id).all()
         jawaban_dict = {j.pertanyaan_id: j.jawaban for j in all_jawaban}
 
@@ -96,7 +99,7 @@ def input_survey(user_id):
             jawaban_user = jawaban_dict.get(p.pertanyaan_id)
             if jawaban_user:
                 nilai_list = mapping.get(jawaban_user.upper(), [0, 0, 0])
-                for idx, prodi_id in enumerate([1, 2, 3]):  # 1=TI, 2=TMJ, 3=TMD
+                for idx, prodi_id in enumerate([1, 2, 3]):
                     nilai = nilai_list[idx]
                     penilaian = PenilaianAlternatif(
                         user_id=user_id,
@@ -131,10 +134,8 @@ def hitung_moora(user_id):
     for p in prodi:
         skor = 0
         for k in kriteria:
-            # Cari nilai yang sesuai
             nilai_obj = next((pn for pn in penilaian_list if pn.prodi_id == p.prodi_id and pn.kriteria_id == k.kriteria_id), None)
             nilai = nilai_obj.nilai if nilai_obj else 0
-            
             bobot = bobot_normalisasi.get(k.kriteria_id, 0)
             skor += bobot * nilai
         skor_prodi[p.prodi_id] = skor
@@ -149,7 +150,6 @@ def hitung_moora(user_id):
 
     hasil_sorted = HasilKeputusan.query.filter_by(user_id=user.user_id).order_by(HasilKeputusan.skor_akhir.desc()).all()
     
-    # Menggabungkan hasil dengan nama prodi untuk template
     hasil_final = []
     for h in hasil_sorted:
         prodi_obj = ProgramStudi.query.get(h.prodi_id)
@@ -162,11 +162,6 @@ def hitung_moora(user_id):
 
     return render_template('hasil.html', user=user, hasil=hasil_final)
 
-
-# ======================
-# 4. RUNNING APP
-# ======================
+# Bagian ini dibiarkan untuk menjalankan di lokal
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
