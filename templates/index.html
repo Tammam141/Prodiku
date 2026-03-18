@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Selamat Datang - DSS Pemilihan Program Studi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../static/index.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo">ProdiKu</a>
+            <ul class="nav-links">
+                <li><a href="#hero">Beranda</a></li>
+                <li><a href="#features">Mengapa Kami?</a></li>
+                <li><a href="#how-it-works">Cara Kerja</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="hero" class="hero">
+        <div class="hero-content">
+            <h1>Temukan Program Studi Impianmu</h1>
+            <p>
+                Sistem ini akan membantu Anda memilih program studi terbaik sesuai minat, gaya belajar, dan preferensi
+                Anda.
+                Hanya dengan mengisi survei singkat, Anda akan mendapatkan rekomendasi yang akurat dan personal.
+            </p>
+            <a href="{{ url_for('input_bobot') }}" class="cta-button">
+                <i class="fas fa-arrow-right"></i> Mulai Survei Sekarang
+            </a>
+        </div>
+    </section>
+
+    <section id="features" class="features section-padding text-center">
+        <div class="container">
+            <h2 class="section-heading">Mengapa Memilih ProdiKu?</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>Rekomendasi Akurat</h3>
+                    <p>Dapatkan saran program studi yang disesuaikan secara presisi dengan karakteristik unik Anda.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-poll"></i>
+                    <h3>Survei Interaktif</h3>
+                    <p>Proses pengisian survei yang mudah dan cepat, dirancang untuk kenyamanan pengguna.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-user-friends"></i>
+                    <h3>Pengalaman Personal</h3>
+                    <p>Sistem kami memahami kebutuhan individual Anda untuk hasil yang lebih relevan dan optimal.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Pilihan Karir Terbaik</h3>
+                    <p>Memilih jurusan yang tepat akan membuka pintu menuju masa depan karir yang cerah dan menjanjikan.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works section-padding text-center">
+        <div class="container">
+            <h2 class="section-heading">Bagaimana ProdiKu Bekerja?</h2>
+            <div class="steps-grid">
+                <div class="step-item">
+                    <span class="step-number">1</span>
+                    <h3>Isi Survei Minat</h3>
+                    <p>Jawab pertanyaan tentang minat, kekuatan, dan preferensi gaya belajar Anda untuk profil awal.</p>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">2</span>
+                    <h3>Analisis Data Cerdas</h3>
+                    <p>Sistem canggih kami akan memproses jawaban Anda untuk mengidentifikasi potensi terbaik Anda.</p>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">3</span>
+                    <h3>Dapatkan Rekomendasi Anda</h3>
+                    <p>Lihat daftar program studi unggulan yang paling cocok dan direkomendasikan untuk Anda.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Dibuat dengan &#x2764; oleh Tim ProdiKu</p>
+            <p>&copy; 2025 ProdiKu. Semua Hak Dilindungi. | <a href="{{ url_for('admin.dashboard') }}">Login Admin</a></p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Navbar scroll effect
+            const navbar = document.querySelector('.navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // Intersection Observer for scroll animations
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.2 // Trigger when 20% of the element is visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                        observer.unobserve(entry.target); // Stop observing once animated
+                    }
+                });
+            }, observerOptions);
+
+            // Apply animation to section headings
+            document.querySelectorAll('.section-heading').forEach(heading => {
+                observer.observe(heading);
+            });
+
+            // Apply animation to feature items with staggered delay
+            document.querySelectorAll('.feature-item').forEach((item, index) => {
+                item.style.transitionDelay = `${index * 0.1}s`; // Staggered delay
+                observer.observe(item);
+            });
+
+            // Apply animation to step items with staggered delay
+            document.querySelectorAll('.step-item').forEach((item, index) => {
+                item.style.transitionDelay = `${index * 0.1}s`; // Staggered delay
+                observer.observe(item);
+            });
+
+            // Hero content animation (already set via CSS animation-delay, but can be controlled here too if needed)
+            document.querySelector('.hero-content').classList.add('animated');
+        });
+    </script>
+
+</body>
+
+</html>

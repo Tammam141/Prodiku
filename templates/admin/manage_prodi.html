@@ -1,0 +1,69 @@
+{% extends "admin/_base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Manajemen Program Studi</h1>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal"><i class="fas fa-plus me-2"></i> Tambah Prodi</button>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama Program Studi</th>
+                        <th>Deskripsi</th>
+                        <th class="text-end">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in prodi %}
+                    <tr>
+                        <td>{{ p.prodi_id }}</td>
+                        <td class="fw-bold">{{ p.nama_prodi }}</td>
+                        <td>{{ p.deskripsi }}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ p.prodi_id }}"><i class="fas fa-edit"></i></button>
+                            <a href="{{ url_for('admin.delete_prodi', id=p.prodi_id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus prodi ini?')"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="editModal{{ p.prodi_id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form action="{{ url_for('admin.update_prodi', id=p.prodi_id) }}" method="POST">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit Program Studi</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3"><label class="form-label">Nama Program Studi</label><input type="text" name="nama_prodi" class="form-control" value="{{ p.nama_prodi }}" required></div>
+                                        <div class="mb-3"><label class="form-label">Deskripsi</label><textarea name="deskripsi" class="form-control">{{ p.deskripsi }}</textarea></div>
+                                    </div>
+                                    <div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan Perubahan</button></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addModal" tabindex="-1">
+     <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ url_for('admin.add_prodi') }}" method="POST">
+                <div class="modal-header"><h5 class="modal-title">Tambah Program Studi</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label">Nama Program Studi</label><input type="text" name="nama_prodi" class="form-control" required></div>
+                    <div class="mb-3"><label class="form-label">Deskripsi</label><textarea name="deskripsi" class="form-control"></textarea></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Tambah</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

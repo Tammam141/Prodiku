@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Input Bobot Kriteria - ProdiKu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@500;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="../static/input_bobot.css">
+    <script>
+        function normalizeBobot() {
+            const inputs = document.querySelectorAll('.bobot-input');
+            let total = 0;
+            inputs.forEach(i => {
+                total += parseFloat(i.value) || 0;
+            });
+
+            inputs.forEach(i => {
+                const percentageSpan = i.closest('.form-group').querySelector('.percentage');
+                if (total > 0) {
+                    const normalized = (parseFloat(i.value) || 0) / total * 100;
+                    percentageSpan.innerText = normalized.toFixed(1) + '%';
+                } else {
+                    percentageSpan.innerText = '0.0%';
+                }
+            });
+        }
+
+        function validateBobotForm(event) {
+            const inputs = document.querySelectorAll('.bobot-input');
+            let allZero = true;
+            for (const input of inputs) {
+                if (parseFloat(input.value) > 0) {
+                    allZero = false;
+                    break;
+                }
+            }
+
+            let errorMessage = '';
+            const namaInput = document.getElementById('nama');
+
+            if (namaInput && namaInput.value.trim() === '') {
+                errorMessage = 'Nama lengkap harus diisi.';
+            } else if (allZero) {
+                errorMessage = 'Setidaknya satu kriteria harus memiliki bobot lebih dari 0.';
+            }
+
+            const errorMessageDiv = document.getElementById('error-message');
+            if (errorMessage) {
+                if (!errorMessageDiv) {
+                    const newErrorDiv = document.createElement('div');
+                    newErrorDiv.id = 'error-message';
+                    newErrorDiv.className = 'error-message';
+                    newErrorDiv.innerText = errorMessage;
+                    document.querySelector('form').insertBefore(newErrorDiv, event.target);
+                    setTimeout(() => newErrorDiv.classList.add('show'), 10);
+                } else {
+                    errorMessageDiv.innerText = errorMessage;
+                    errorMessageDiv.classList.add('show');
+                }
+                if (namaInput && namaInput.value.trim() === '') {
+                    namaInput.focus();
+                }
+                event.preventDefault();
+                return false;
+            } else if (errorMessageDiv) {
+                errorMessageDiv.classList.remove('show');
+            }
+            return true; // Form is valid
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            normalizeBobot();
+            const inputs = document.querySelectorAll('.bobot-input');
+            inputs.forEach(i => i.addEventListener('change', normalizeBobot));
+
+            const form = document.querySelector('form');
+            form.addEventListener('submit', validateBobotForm);
+        });
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="header-colorful">
+            <div class="progress-indicator">
+                Langkah <strong class="step-number">1</strong> dari 3
+            </div>
+            <h2>Pentingnya Bagimu?</h2>
+            <p class="subtitle">
+                Pilih bobot (0-50) untuk setiap kriteria berdasarkan seberapa penting kriteria tersebut bagi kamu.
+                Semakin tinggi bobot, semakin besar pengaruhnya dalam rekomendasi program studi terbaik!
+            </p>
+        </div>
+
+        <div class="form-content">
+            <form method="POST">
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap:</label>
+                    <input type="text" name="nama" id="nama" placeholder="Misal: Budi Santoso" required />
+                </div>
+
+                {% for k in kriteria %}
+                <div class="form-group">
+                    <label for="bobot_{{ k.kriteria_id }}">{{ k.nama_kriteria }} ({{ k.kode_kriteria }})</label>
+                    <select name="bobot_{{ k.kriteria_id }}" class="bobot-input" required>
+                        <option value="0">0 - Tidak Penting Sama Sekali</option>
+                        <option value="5">5 - Sangat Tidak Penting</option>
+                        <option value="10">10 - Tidak Penting</option>
+                        <option value="15">15 - Kurang Penting</option>
+                        <option value="20">20 - Cukup Penting</option>
+                        <option value="25">25 - Penting</option>
+                        <option value="30">30 - Agak Penting</option>
+                        <option value="35">35 - Sangat Penting</option>
+                        <option value="40">40 - Amat Penting</option>
+                        <option value="45">45 - Prioritas Tinggi</option>
+                        <option value="50">50 - Wajib Ada</option>
+                    </select>
+                    <div class="bobot-info">
+                        <span>Kontribusi pada total:</span>
+                        <span class="percentage">0.0%</span>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if error %}
+                <div id="error-message" class="error-message show">
+                    {{ error }}
+                </div>
+                {% else %}
+                <div id="error-message" class="error-message" style="display: none;"></div>
+                {% endif %}
+
+                <button type="submit">
+                    Lanjut ke Pertanyaan <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

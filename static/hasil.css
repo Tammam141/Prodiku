@@ -1,0 +1,107 @@
+body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            padding: 30px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #2196F3);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #28a745;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        /* PERUBAHAN DI SINI: .btn-pdf ditambahkan ke grup */
+        .btn-back,
+        .btn-save,
+        .btn-pdf { 
+            display: inline-block;
+            padding: 14px 32px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            width: auto;
+            text-align: center;
+        }
+
+        .btn-back {
+            background-color: #28a745;
+        }
+
+        .btn-save {
+            background-color: #007bff;
+        }
+
+        /* STYLE BARU UNTUK TOMBOL PDF */
+        .btn-pdf {
+            background-color: #dc3545; /* Warna merah */
+        }
+
+        /* PERUBAHAN DI SINI: .btn-pdf ditambahkan ke hover effect */
+        .btn-back:hover,
+        .btn-save:hover,
+        .btn-pdf:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-recommended {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-caution {
+            color: #ff9800;
+            font-weight: bold;
+        }
+
+        .status-not-recommended {
+            color: #dc3545;
+            font-weight: bold;
+        }

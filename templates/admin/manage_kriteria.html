@@ -1,0 +1,73 @@
+{% extends "admin/_base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Manajemen Kriteria</h1>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal"><i class="fas fa-plus me-2"></i> Tambah Kriteria</button>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Kode</th>
+                        <th>Nama Kriteria</th>
+                        <th>Penjelasan</th>
+                        <th class="text-end">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for k in kriteria %}
+                    <tr>
+                        <td>{{ k.kriteria_id }}</td>
+                        <td class="fw-bold">{{ k.kode_kriteria }}</td>
+                        <td>{{ k.nama_kriteria }}</td>
+                        <td>{{ k.penjelasan }}</td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ k.kriteria_id }}"><i class="fas fa-edit"></i></button>
+                            <a href="{{ url_for('admin.delete_kriteria', id=k.kriteria_id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus kriteria ini?')"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="editModal{{ k.kriteria_id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form action="{{ url_for('admin.update_kriteria', id=k.kriteria_id) }}" method="POST">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit Kriteria</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3"><label class="form-label">Kode Kriteria</label><input type="text" name="kode_kriteria" class="form-control" value="{{ k.kode_kriteria }}" required></div>
+                                        <div class="mb-3"><label class="form-label">Nama Kriteria</label><input type="text" name="nama_kriteria" class="form-control" value="{{ k.nama_kriteria }}" required></div>
+                                        <div class="mb-3"><label class="form-label">Penjelasan</label><textarea name="penjelasan" class="form-control">{{ k.penjelasan }}</textarea></div>
+                                    </div>
+                                    <div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan Perubahan</button></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ url_for('admin.add_kriteria') }}" method="POST">
+                <div class="modal-header"><h5 class="modal-title">Tambah Kriteria Baru</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                     <div class="mb-3"><label class="form-label">Kode Kriteria</label><input type="text" name="kode_kriteria" class="form-control" required></div>
+                     <div class="mb-3"><label class="form-label">Nama Kriteria</label><input type="text" name="nama_kriteria" class="form-control" required></div>
+                     <div class="mb-3"><label class="form-label">Penjelasan</label><textarea name="penjelasan" class="form-control"></textarea></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Tambah</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

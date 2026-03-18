@@ -1,0 +1,50 @@
+{% extends "admin/_base.html" %}
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex align-items-center">
+                <i class="fas fa-users fa-3x text-primary me-3"></i>
+                <div>
+                    <div class="text-muted text-uppercase small">Total Pengguna</div>
+                    <div class="h4 fw-bold mb-0">{{ users_count }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex align-items-center">
+                <i class="fas fa-list-ol fa-3x text-success me-3"></i>
+                <div>
+                    <div class="text-muted text-uppercase small">Jumlah Kriteria</div>
+                    <div class="h4 fw-bold mb-0">{{ kriteria_count }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex align-items-center">
+                <i class="fas fa-graduation-cap fa-3x text-info me-3"></i>
+                <div>
+                    <div class="text-muted text-uppercase small">Jumlah Prodi</div>
+                    <div class="h4 fw-bold mb-0">{{ prodi_count }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex align-items-center">
+                <i class="fas fa-question-circle fa-3x text-warning me-3"></i>
+                <div>
+                    <div class="text-muted text-uppercase small">Jumlah Pertanyaan</div>
+                    <div class="h4 fw-bold mb-0">{{ pertanyaan_count }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
