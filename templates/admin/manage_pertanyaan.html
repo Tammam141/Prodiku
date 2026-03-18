@@ -2,7 +2,8 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Manajemen Pertanyaan Survei</h1>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal"><i class="fas fa-plus me-2"></i> Tambah Pertanyaan</button>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal"><i class="fas fa-plus me-2"></i>
+        Tambah Pertanyaan</button>
 </div>
 
 <div class="card shadow-sm">
@@ -21,20 +22,21 @@
                     {% for p in pertanyaan %}
                     <tr>
                         <td>{{ p.pertanyaan_id }}</td>
-                        <td><span class="badge bg-secondary">{{ p.kriteria_ref.nama_kriteria if p.kriteria_ref else p.kriteria.nama_kriteria }}</span></td>
-                        
+
+                        <td><span class="badge bg-secondary">{{ p.kriteria_ref.nama_kriteria if p.kriteria_ref else
+                                p.kriteria.nama_kriteria }}</span></td>
+
                         <td>{{ p.teks_pertanyaan }}</td>
-                        
+
                         <td class="text-end">
-                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ p.pertanyaan_id }}"><i class="fas fa-edit"></i></button>
-                            <a href="{{ url_for('admin.delete_pertanyaan', id=p.pertanyaan_id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus pertanyaan ini?')"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
 
                     <div class="modal fade" id="editModal{{ p.pertanyaan_id }}" tabindex="-1">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
-                                <form action="{{ url_for('admin.update_pertanyaan', id=p.pertanyaan_id) }}" method="POST">
+                                <form action="{{ url_for('admin.update_pertanyaan', id=p.pertanyaan_id) }}"
+                                    method="POST">
                                     <div class="modal-header">
                                         <h5 class="modal-title">Edit Pertanyaan</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -44,20 +46,29 @@
                                             <label class="form-label">Kriteria Terkait</label>
                                             <select name="kriteria_id" class="form-select" required>
                                                 {% for k in kriteria_list %}
-                                                <option value="{{ k.kriteria_id }}" {% if k.kriteria_id == p.kriteria_id %}selected{% endif %}>{{ k.nama_kriteria }}</option>
+                                                <option value="{{ k.kriteria_id }}" {% if k.kriteria_id==p.kriteria_id
+                                                    %}selected{% endif %}>{{ k.nama_kriteria }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Teks Pertanyaan</label>
-                                            <textarea name="pertanyaan" class="form-control" required>{{ p.teks_pertanyaan }}</textarea>
+                                            <textarea name="pertanyaan" class="form-control"
+                                                required>{{ p.teks_pertanyaan }}</textarea>
                                         </div>
                                         <hr>
-                                        <div class="mb-3"><label class="form-label">Opsi A</label><input type="text" name="opsi_a" class="form-control" value="{{ p.opsi_a }}" required></div>
-                                        <div class="mb-3"><label class="form-label">Opsi B</label><input type="text" name="opsi_b" class="form-control" value="{{ p.opsi_b }}" required></div>
-                                        <div class="mb-3"><label class="form-label">Opsi C</label><input type="text" name="opsi_c" class="form-control" value="{{ p.opsi_c }}" required></div>
+                                        <div class="mb-3"><label class="form-label">Opsi A</label><input type="text"
+                                                name="opsi_a" class="form-control" value="{{ p.opsi_a }}" required>
+                                        </div>
+                                        <div class="mb-3"><label class="form-label">Opsi B</label><input type="text"
+                                                name="opsi_b" class="form-control" value="{{ p.opsi_b }}" required>
+                                        </div>
+                                        <div class="mb-3"><label class="form-label">Opsi C</label><input type="text"
+                                                name="opsi_c" class="form-control" value="{{ p.opsi_c }}" required>
+                                        </div>
                                     </div>
-                                    <div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan Perubahan</button></div>
+                                    <div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan
+                                            Perubahan</button></div>
                                 </form>
                             </div>
                         </div>
@@ -73,7 +84,10 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form action="{{ url_for('admin.add_pertanyaan') }}" method="POST">
-                <div class="modal-header"><h5 class="modal-title">Tambah Pertanyaan Baru</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Pertanyaan Baru</h5><button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+                </div>
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Kriteria Terkait</label>
@@ -84,11 +98,15 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="mb-3"><label class="form-label">Teks Pertanyaan</label><textarea name="pertanyaan" class="form-control" placeholder="Masukkan teks pertanyaan..." required></textarea></div>
+                    <div class="mb-3"><label class="form-label">Teks Pertanyaan</label><textarea name="pertanyaan"
+                            class="form-control" placeholder="Masukkan teks pertanyaan..." required></textarea></div>
                     <hr>
-                    <div class="mb-3"><label class="form-label">Opsi A</label><input type="text" name="opsi_a" class="form-control" placeholder="Teks untuk pilihan A" required></div>
-                    <div class="mb-3"><label class="form-label">Opsi B</label><input type="text" name="opsi_b" class="form-control" placeholder="Teks untuk pilihan B" required></div>
-                    <div class="mb-3"><label class="form-label">Opsi C</label><input type="text" name="opsi_c" class="form-control" placeholder="Teks untuk pilihan C" required></div>
+                    <div class="mb-3"><label class="form-label">Opsi A</label><input type="text" name="opsi_a"
+                            class="form-control" placeholder="Teks untuk pilihan A" required></div>
+                    <div class="mb-3"><label class="form-label">Opsi B</label><input type="text" name="opsi_b"
+                            class="form-control" placeholder="Teks untuk pilihan B" required></div>
+                    <div class="mb-3"><label class="form-label">Opsi C</label><input type="text" name="opsi_c"
+                            class="form-control" placeholder="Teks untuk pilihan C" required></div>
                 </div>
                 <div class="modal-footer"><button type="submit" class="btn btn-primary">Tambah</button></div>
             </form>

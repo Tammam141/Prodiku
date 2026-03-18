@@ -154,10 +154,10 @@ def delete_prodi(id):
 @admin_bp.route('/pertanyaan')
 @login_required
 def manage_pertanyaan():
-    # Menambahkan order_by agar urutan sama dengan halaman user
-    pertanyaan_data = PertanyaanSurvei.query.order_by(PertanyaanSurvei.pertanyaan_id.asc()).all()
+    # PENTING: Tambahkan order_by agar urutan sama dengan halaman user
+    pertanyaan_list = PertanyaanSurvei.query.order_by(PertanyaanSurvei.pertanyaan_id.asc()).all()
     kriteria_list = Kriteria.query.all()
-    return render_template('manage_pertanyaan.html', pertanyaan=pertanyaan_data, kriteria_list=kriteria_list)
+    return render_template('manage_pertanyaan.html', pertanyaan=pertanyaan_list, kriteria_list=kriteria_list)
 
 @admin_bp.route('/pertanyaan/add', methods=['POST'])
 @login_required
