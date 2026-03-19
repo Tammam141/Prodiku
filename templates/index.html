@@ -24,18 +24,19 @@
         </div>
     </nav>
 
-    <section id="hero" class="hero">
-        <div class="hero-content">
-            <h1>Temukan Program Studi Impianmu</h1>
-            <p>
-                Sistem ini akan membantu Anda memilih program studi terbaik sesuai minat, gaya belajar, dan preferensi
-                Anda.
-                Hanya dengan mengisi survei singkat, Anda akan mendapatkan rekomendasi yang akurat dan personal.
-            </p>
-            <a href="{{ url_for('input_bobot') }}" class="cta-button">
-                <i class="fas fa-arrow-right"></i> Mulai Survei Sekarang
-            </a>
-        </div>
+   <section id="hero" class="hero">
+    <div class="hero-content">
+        <h1>Temukan Program Studi Impianmu</h1>
+        <p>Sistem ini akan membantu Anda memilih program studi terbaik. Masukkan nama Anda untuk memulai.</p>
+        
+        <form action="{{ url_for('index') }}" method="POST" style="margin-top: 20px;">
+            <input type="text" name="nama" placeholder="Masukkan Nama Lengkap" required 
+                   style="padding: 10px; border-radius: 5px; border: none; width: 250px;">
+            <button type="submit" class="cta-button" style="border: none; cursor: pointer;">
+                <i class="fas fa-arrow-right"></i> Mulai Survei
+            </button>
+        </form>
+    </div>
     </section>
 
     <section id="features" class="features section-padding text-center">
