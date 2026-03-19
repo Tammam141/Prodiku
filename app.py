@@ -26,56 +26,51 @@ db.init_app(app)
 app.register_blueprint(admin_bp)
 
 # ======================
-# HALAMAN INDEX / HOME
+# HALAMAN INDEX
 # ======================
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         nama = request.form.get('nama', '').strip()
         if not nama:
-            flash("Nama harus diisi!")
             return redirect(url_for('index'))
         
-        # Simpan nama di session agar tidak hilang saat pindah halaman
-        session['user_nama'] = nama
-        return redirect(url_for('input_bobot'))
-    
-    return render_template('index.html')
-
-# ======================
-# 1. INPUT BOBOT KRITERIA
-# ======================
-@app.route('/bobot', methods=['GET', 'POST'])
-def input_bobot():
-    kriteria = Kriteria.query.all()
-    nama = session.get('user_nama')
-
-    if not nama:
-        return redirect(url_for('index'))
-
-    if request.method == 'POST':
-        # Simpan User Baru
+        # Buat user di sini agar kita punya ID tetap
         user = User(nama=nama, tipe_user='Siswa')
         db.session.add(user)
         db.session.commit()
         
-        # Simpan User ID ke session untuk langkah berikutnya
-        session['user_id'] = user.user_id
+        # Langsung lempar ke bobot dengan membawa user_id di URL
+        return redirect(url_for('input_bobot', user_id=user.user_id))
+    
+    return render_template('index.html')
 
-        # Simpan Bobot
+# ======================
+# 1. INPUT BOBOT KRITERIA (Membawa user_id)
+# ======================
+@app.route('/bobot/<int:user_id>', methods=['GET', 'POST'])
+def input_bobot(user_id):
+    user = User.query.get_or_404(user_id)
+    kriteria = Kriteria.query.all()
+
+    if request.method == 'POST':
+        # Hapus bobot lama jika user refresh halaman
+        BobotKriteria.query.filter_by(user_id=user_id).delete()
+
         for k in kriteria:
             val = request.form.get(f'bobot_{k.kriteria_id}', 0)
             bobot = BobotKriteria(
-                user_id=user.user_id, 
+                user_id=user_id, 
                 kriteria_id=k.kriteria_id, 
                 bobot_input=float(val) if val else 0
             )
             db.session.add(bobot)
         
         db.session.commit()
-        return redirect(url_for('input_survey', user_id=user.user_id))
+        # Lanjut ke survey
+        return redirect(url_for('input_survey', user_id=user_id))
 
-    return render_template('input_bobot.html', kriteria=kriteria, nama=nama)
+    return render_template('input_bobot.html', kriteria=kriteria, user=user)
 
 # ======================
 # 2. INPUT SURVEY PREFERENSI
