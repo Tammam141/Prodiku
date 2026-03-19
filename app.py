@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
 from models import (
@@ -12,18 +12,19 @@ from admin_routes import admin_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Fix URL Database untuk Vercel
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tammam_secret_123')
+# Fix URL Database & Secret Key
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tammam_rahasia_asta_2026')
 uri = os.environ.get('DATABASE_URL')
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = uri or app.config.get('SQLALCHEMY_DATABASE_URI')
 
 db.init_app(app)
-app.register_blueprint(admin_bp)
+# Register blueprint admin agar link login jalan
+app.register_blueprint(admin_bp, url_prefix='/admin')
 
 # ======================
-# HALAMAN INDEX (Input Nama di Sini)
+# HALAMAN INDEX (Input Nama)
 # ======================
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -32,12 +33,10 @@ def index():
         if not nama:
             return redirect(url_for('index'))
         
-        # Simpan User Baru
         user = User(nama=nama, tipe_user='Siswa')
         db.session.add(user)
         db.session.commit()
         
-        # Lanjut ke Bobot membawa user_id
         return redirect(url_for('input_bobot', user_id=user.user_id))
     
     return render_template('index.html')
@@ -66,12 +65,17 @@ def input_bobot(user_id):
     return render_template('input_bobot.html', kriteria=kriteria, user=user)
 
 # ======================
-# 2. INPUT SURVEY
+# 2. INPUT SURVEY (Penyebab Error 500)
 # ======================
 @app.route('/survey/<int:user_id>', methods=['GET', 'POST'])
 def input_survey(user_id):
     user = User.query.get_or_404(user_id)
+    # Pastikan data pertanyaan diambil dengan benar
     pertanyaan = PertanyaanSurvei.query.order_by(PertanyaanSurvei.pertanyaan_id.asc()).all()
+
+    # Jika tabel pertanyaan kosong di DB, tampilkan pesan ini daripada Error 500
+    if not pertanyaan:
+        return "<h3>Error: Tabel Pertanyaan Kosong!</h3><p>Harap isi tabel pertanyaan_survei di Neon SQL Editor.</p>", 500
 
     if request.method == 'POST':
         SurveyJawaban.query.filter_by(user_id=user_id).delete()
@@ -85,11 +89,12 @@ def input_survey(user_id):
                 db.session.add(SurveyJawaban(user_id=user_id, pertanyaan_id=p.pertanyaan_id, jawaban=jawaban))
                 nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
                 
-                # Menggunakan ID Prodi 1, 2, 3 sesuai database Neon kamu
                 for idx, prodi_id in enumerate([1, 2, 3]):
                     penilaian = PenilaianAlternatif(
-                        user_id=user_id, prodi_id=prodi_id,
-                        kriteria_id=p.kriteria_id, nilai=float(nilai_list[idx])
+                        user_id=user_id, 
+                        prodi_id=prodi_id,
+                        kriteria_id=p.kriteria_id, 
+                        nilai=float(nilai_list[idx])
                     )
                     db.session.add(penilaian)
         db.session.commit()
