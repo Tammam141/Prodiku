@@ -4,7 +4,6 @@ from datetime import date
 db = SQLAlchemy()
 
 class User(db.Model):
-    # Di PostgreSQL nama tabelnya 'users' karena 'user' adalah reserved word
     __tablename__ = 'users' 
     user_id = db.Column(db.Integer, primary_key=True)
     nama = db.Column(db.String(100), nullable=False)
@@ -23,8 +22,29 @@ class Kriteria(db.Model):
     nama_kriteria = db.Column(db.String(100), nullable=False)
     penjelasan = db.Column(db.Text)
     
-    # Relasi untuk mempermudah pemanggilan pertanyaan dari kriteria
-    pertanyaan = db.relationship('PertanyaanSurvei', backref='kriteria', lazy=True, cascade="all, delete-orphan")
+    # Relasi tunggal yang rapi
+    pertanyaan = db.relationship('PertanyaanSurvei', 
+                                 backref='kriteria_ref', 
+                                 lazy=True, 
+                                 cascade="all, delete-orphan",
+                                 order_by="PertanyaanSurvei.pertanyaan_id")
+
+class PertanyaanSurvei(db.Model):
+    __tablename__ = 'pertanyaan_survei'
+    pertanyaan_id = db.Column(db.Integer, primary_key=True)
+    kriteria_id = db.Column(db.Integer, db.ForeignKey('kriteria.kriteria_id'))
+    teks_pertanyaan = db.Column(db.Text) 
+    opsi_a = db.Column(db.Text)
+    opsi_b = db.Column(db.Text)
+    opsi_c = db.Column(db.Text)
+
+class SurveyJawaban(db.Model):
+    __tablename__ = 'survey_jawaban'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    pertanyaan_id = db.Column(db.Integer, db.ForeignKey('pertanyaan_survei.pertanyaan_id'), nullable=False)
+    jawaban = db.Column(db.String(10), nullable=False)
+    tanggal_input = db.Column(db.Date, default=date.today)
 
 class BobotKriteria(db.Model):
     __tablename__ = 'bobot_kriteria'
@@ -51,30 +71,5 @@ class HasilKeputusan(db.Model):
     skor_akhir = db.Column(db.Float, nullable=False)
     tanggal_keputusan = db.Column(db.Date, default=date.today)
     
-    # Relasi untuk memudahkan query hasil
     user = db.relationship('User', backref='hasil_keputusan_ref')
     prodi = db.relationship('ProgramStudi', backref='hasil_keputusan_ref')
-
-class PertanyaanSurvei(db.Model):
-    __tablename__ = 'pertanyaan_survei'
-    pertanyaan_id = db.Column(db.Integer, primary_key=True)
-    kriteria_id = db.Column(db.Integer, db.ForeignKey('kriteria.kriteria_id'))
-    teks_pertanyaan = db.Column(db.Text) 
-    opsi_a = db.Column(db.Text)
-    opsi_b = db.Column(db.Text)
-    opsi_c = db.Column(db.Text)
-    
-class Kriteria(db.Model):
-    __tablename__ = 'kriteria'
-    kriteria_id = db.Column(db.Integer, primary_key=True)
-    kode_kriteria = db.Column(db.String(10), nullable=False)
-    nama_kriteria = db.Column(db.String(100), nullable=False)
-    penjelasan = db.Column(db.Text)
-    
-    # Gabungkan relasi di sini
-    pertanyaan = db.relationship('PertanyaanSurvei', 
-                                 backref='kriteria_ref', 
-                                 lazy=True, 
-                                 cascade="all, delete-orphan",
-                                 order_by="PertanyaanSurvei.pertanyaan_id")
-        
