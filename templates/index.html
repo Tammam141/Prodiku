@@ -26,14 +26,11 @@
    <section id="hero" class="hero">
     <div class="hero-content">
         <h1>Temukan Program Studi Impianmu</h1>
-        <form action="{{ url_for('index') }}" method="POST" style="margin-top: 20px;">
-            <input type="text" name="nama" placeholder="Masukkan Nama Anda" required 
-                   style="padding: 12px; border-radius: 8px; border: none; width: 280px; margin-bottom: 10px;">
-            <br>
-            <button type="submit" class="cta-button" style="border: none; cursor: pointer;">
-                <i class="fas fa-arrow-right"></i> Mulai Survei
-            </button>
-        </form>
+      <form action="{{ url_for('index') }}" method="POST">
+    <input type="text" name="nama" placeholder="Masukkan Nama Anda" required 
+           style="padding: 10px; border-radius: 5px; width: 250px;">
+    <button type="submit" class="cta-button">Mulai Survei</button>
+</form>
     </div>
 </section>
 
