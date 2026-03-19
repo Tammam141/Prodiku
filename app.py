@@ -72,27 +72,47 @@ def input_bobot(user_id):
 @app.route('/survey/<int:user_id>', methods=['GET', 'POST'])
 def input_survey(user_id):
     user = User.query.get_or_404(user_id)
+    # Gunakan filter agar hanya mengambil pertanyaan yang valid
     pertanyaan = PertanyaanSurvei.query.order_by(PertanyaanSurvei.pertanyaan_id.asc()).all()
 
-    if request.method == 'POST':
-        SurveyJawaban.query.filter_by(user_id=user_id).delete()
-        PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
-        
-        mapping = {'A': [5, 3, 2], 'B': [2, 5, 3], 'C': [1, 2, 5]}
+    # PENTING: Jika tabel pertanyaan kosong, Flask akan error 500 saat render. 
+    # Kita cegah di sini.
+    if not pertanyaan:
+        return "<h3>Database Error: Tabel 'pertanyaan_survei' kosong!</h3><p>Harap isi data pertanyaan di SQL Editor Neon terlebih dahulu agar halaman ini bisa tampil.</p>", 500
 
-        for p in pertanyaan:
-            jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
-            if jawaban:
-                db.session.add(SurveyJawaban(user_id=user_id, pertanyaan_id=p.pertanyaan_id, jawaban=jawaban))
-                nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
-                for idx, prodi_id in enumerate([1, 2, 3]):
-                    penilaian = PenilaianAlternatif(
-                        user_id=user_id, prodi_id=prodi_id,
-                        kriteria_id=p.kriteria_id, nilai=float(nilai_list[idx])
-                    )
-                    db.session.add(penilaian)
-        db.session.commit()
-        return redirect(url_for('hitung_moora', user_id=user_id))
+    if request.method == 'POST':
+        try:
+            # Bersihkan jawaban lama agar tidak duplikat
+            SurveyJawaban.query.filter_by(user_id=user_id).delete()
+            PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
+            
+            # Mapping nilai MOORA
+            mapping = {'A': [5, 3, 2], 'B': [2, 5, 3], 'C': [1, 2, 5]}
+
+            for p in pertanyaan:
+                # Pastikan name di HTML adalah jawaban[{{ p.pertanyaan_id }}]
+                jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
+                
+                if jawaban:
+                    # 1. Simpan jawaban mentah
+                    db.session.add(SurveyJawaban(user_id=user_id, pertanyaan_id=p.pertanyaan_id, jawaban=jawaban))
+                    
+                    # 2. Distribusikan nilai ke alternatif prodi
+                    nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
+                    for idx, prodi_id in enumerate([1, 2, 3]): # ID Prodi harus ada di DB
+                        penilaian = PenilaianAlternatif(
+                            user_id=user_id, 
+                            prodi_id=prodi_id,
+                            kriteria_id=p.kriteria_id, # Pastikan kriteria_id ini tidak NULL di DB
+                            nilai=float(nilai_list[idx])
+                        )
+                        db.session.add(penilaian)
+            
+            db.session.commit()
+            return redirect(url_for('hitung_moora', user_id=user_id))
+        except Exception as e:
+            db.session.rollback()
+            return f"Terjadi kesalahan saat menyimpan data: {str(e)}", 500
 
     return render_template('input_survey.html', user=user, pertanyaan=pertanyaan)
 
