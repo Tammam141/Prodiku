@@ -78,9 +78,3 @@ class Kriteria(db.Model):
                                  cascade="all, delete-orphan",
                                  order_by="PertanyaanSurvei.pertanyaan_id")
         
-class Kriteria(db.Model):
-    pertanyaan = db.relationship('PertanyaanSurvei', 
-                                 backref='kriteria_ref', 
-                                 lazy=True, 
-                                 cascade="all, delete-orphan",
-                                 order_by="PertanyaanSurvei.pertanyaan_id") # Tambahkan ini
