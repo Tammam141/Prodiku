@@ -11,20 +11,17 @@ from models import (
 )
 from admin_routes import admin_bp
 
-# 1. Setup Logging agar muncul di Vercel Logs
+# Setup Logging agar error terlihat di Vercel Logs
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# 2. Perbaikan URL Database & Secret Key
-# Mengambil dari Environment Variable Vercel
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tammam_secret_key_999')
-
+# Secret Key & Database URL Auto-fix
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tammam_asta_secret_2026')
 uri = os.environ.get('DATABASE_URL')
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
-# Jika uri kosong, dia akan pakai yang ada di Config (localhost)
 app.config['SQLALCHEMY_DATABASE_URI'] = uri or app.config.get('SQLALCHEMY_DATABASE_URI')
 
 db.init_app(app)
@@ -33,50 +30,53 @@ app.register_blueprint(admin_bp)
 # ======================
 # HALAMAN INDEX
 # ======================
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    try:
-        if request.method == 'POST':
-            nama = request.form.get('nama', '').strip()
-            if not nama:
-                return redirect(url_for('index'))
-            
-            user = User(nama=nama, tipe_user='Siswa')
-            db.session.add(user)
-            db.session.commit()
-            return redirect(url_for('input_bobot', user_id=user.user_id))
-        
-        return render_template('index.html')
-    except Exception as e:
-        logging.error(f"Error pada Index: {e}")
-        return str(e), 500
+    return render_template('index.html')
 
 # ======================
-# 1. INPUT BOBOT KRITERIA
+# 1. HALAMAN BOBOT (Tampilkan Form)
 # ======================
-@app.route('/bobot/<int:user_id>', methods=['GET', 'POST'])
-def input_bobot(user_id):
-    user = User.query.get_or_404(user_id)
+@app.route('/bobot')
+def input_bobot():
     kriteria = Kriteria.query.all()
-
-    if request.method == 'POST':
-        BobotKriteria.query.filter_by(user_id=user_id).delete()
-        for k in kriteria:
-            val = request.form.get(f'bobot_{k.kriteria_id}')
-            if val:
-                bobot = BobotKriteria(
-                    user_id=user_id, 
-                    kriteria_id=k.kriteria_id, 
-                    bobot_input=float(val)
-                )
-                db.session.add(bobot)
-        db.session.commit()
-        return redirect(url_for('input_survey', user_id=user_id))
-
-    return render_template('input_bobot.html', kriteria=kriteria, user=user)
+    # Jika kriteria kosong di DB, beri peringatan agar tidak error 500
+    if not kriteria:
+        return "Database Error: Tabel kriteria kosong. Harap isi data kriteria di Neon SQL Editor.", 500
+    return render_template('input_bobot.html', kriteria=kriteria)
 
 # ======================
-# 2. INPUT SURVEY PREFERENSI
+# PROSES SIMPAN USER & BOBOT
+# ======================
+@app.route('/bobot/proses', methods=['POST'])
+def proses_bobot():
+    nama = request.form.get('nama', '').strip()
+    if not nama:
+        return redirect(url_for('input_bobot'))
+
+    # 1. Simpan User Baru (Cuma di sini nama diinput)
+    user = User(nama=nama, tipe_user='Siswa')
+    db.session.add(user)
+    db.session.commit()
+
+    # 2. Simpan Bobot Kriteria
+    kriteria = Kriteria.query.all()
+    for k in kriteria:
+        val = request.form.get(f'bobot_{k.kriteria_id}')
+        if val:
+            bobot = BobotKriteria(
+                user_id=user.user_id, 
+                kriteria_id=k.kriteria_id, 
+                bobot_input=float(val)
+            )
+            db.session.add(bobot)
+    
+    db.session.commit()
+    # Pindah ke survey membawa user_id
+    return redirect(url_for('input_survey', user_id=user.user_id))
+
+# ======================
+# 2. HALAMAN SURVEY
 # ======================
 @app.route('/survey/<int:user_id>', methods=['GET', 'POST'])
 def input_survey(user_id):
@@ -87,26 +87,18 @@ def input_survey(user_id):
         SurveyJawaban.query.filter_by(user_id=user_id).delete()
         PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
         
-        mapping = {
-            'A': [5, 3, 2], 
-            'B': [2, 5, 3],
-            'C': [1, 2, 5]
-        }
+        mapping = {'A': [5, 3, 2], 'B': [2, 5, 3], 'C': [1, 2, 5]}
 
         for p in pertanyaan:
             jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
             if jawaban:
-                entry = SurveyJawaban(user_id=user_id, pertanyaan_id=p.pertanyaan_id, jawaban=jawaban)
-                db.session.add(entry)
+                db.session.add(SurveyJawaban(user_id=user_id, pertanyaan_id=p.pertanyaan_id, jawaban=jawaban))
                 
                 nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
-                # Pastikan ID Prodi di DB kamu memang 1, 2, 3
                 for idx, prodi_id in enumerate([1, 2, 3]):
                     penilaian = PenilaianAlternatif(
-                        user_id=user_id,
-                        prodi_id=prodi_id,
-                        kriteria_id=p.kriteria_id,
-                        nilai=float(nilai_list[idx])
+                        user_id=user_id, prodi_id=prodi_id,
+                        kriteria_id=p.kriteria_id, nilai=float(nilai_list[idx])
                     )
                     db.session.add(penilaian)
         
@@ -116,7 +108,7 @@ def input_survey(user_id):
     return render_template('input_survey.html', user=user, pertanyaan=pertanyaan)
 
 # ======================
-# 3. PERHITUNGAN MOORA & HASIL
+# 3. HASIL MOORA
 # ======================
 @app.route('/hasil/<int:user_id>')
 def hitung_moora(user_id):
@@ -127,16 +119,15 @@ def hitung_moora(user_id):
     penilaian_list = PenilaianAlternatif.query.filter_by(user_id=user_id).all()
 
     if not bobot_list or not penilaian_list or not prodi:
-        return f"Data belum lengkap. Silakan isi bobot dan survey kembali.", 400
+        return "Data belum lengkap. Silakan ulangi survei.", 400
 
     total_bobot = sum(b.bobot_input for b in bobot_list)
     if total_bobot == 0: total_bobot = 1
-
     b_norm = {b.kriteria_id: b.bobot_input / total_bobot for b in bobot_list}
 
     HasilKeputusan.query.filter_by(user_id=user_id).delete()
-    
     hasil_display = []
+
     for p in prodi:
         skor = 0
         for k in kriteria:
@@ -146,15 +137,14 @@ def hitung_moora(user_id):
         
         db.session.add(HasilKeputusan(user_id=user_id, prodi_id=p.prodi_id, skor_akhir=skor))
         hasil_display.append({
-            'nama_prodi': p.nama_prodi,
-            'skor_akhir': round(skor, 4),
-            'deskripsi': p.deskripsi or "Tidak ada deskripsi"
+            'nama_prodi': p.nama_prodi, 
+            'skor_akhir': round(skor, 4), 
+            'deskripsi': p.deskripsi or "Info prodi menyusul"
         })
 
     db.session.commit()
     hasil_display = sorted(hasil_display, key=lambda x: x['skor_akhir'], reverse=True)
     return render_template('hasil.html', user=user, hasil=hasil_display)
 
-# PENTING: Untuk Vercel, jangan pakai app.run di level utama
 if __name__ == '__main__':
     app.run(debug=True)
