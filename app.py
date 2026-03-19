@@ -125,42 +125,36 @@ def hitung_moora(user_id):
     bobot_list = BobotKriteria.query.filter_by(user_id=user_id).all()
     penilaian_list = PenilaianAlternatif.query.filter_by(user_id=user_id).all()
 
-    if not bobot_list or not penilaian_list:
-        return "Data belum lengkap untuk menghitung MOORA.", 400
+    # SAFETY CHECK: Jika data kurang, jangan lanjut hitung (biar gak error 500)
+    if not bobot_list or not penilaian_list or not prodi:
+        return f"Error: Data tidak lengkap. Bobot: {len(bobot_list)}, Penilaian: {len(penilaian_list)}, Prodi: {len(prodi)}"
 
     total_bobot = sum(b.bobot_input for b in bobot_list)
     if total_bobot == 0: total_bobot = 1
 
-    # 1. Normalisasi Bobot (Wj)
     b_norm = {b.kriteria_id: b.bobot_input / total_bobot for b in bobot_list}
 
-    # 2. Perhitungan Skor
     HasilKeputusan.query.filter_by(user_id=user_id).delete()
     
     hasil_display = []
     for p in prodi:
         skor = 0
         for k in kriteria:
-            # Ambil nilai yang sesuai dengan prodi dan kriteria ini
             nilai_obj = next((pn for pn in penilaian_list if pn.prodi_id == p.prodi_id and pn.kriteria_id == k.kriteria_id), None)
+            # Jika nilai tidak ketemu, beri 0 daripada crash
             nilai = nilai_obj.nilai if nilai_obj else 0
             skor += b_norm.get(k.kriteria_id, 0) * nilai
         
-        # Simpan ke DB
-        hasil_db = HasilKeputusan(user_id=user_id, prodi_id=p.prodi_id, skor_akhir=skor)
-        db.session.add(hasil_db)
+        db.session.add(HasilKeputusan(user_id=user_id, prodi_id=p.prodi_id, skor_akhir=skor))
         
         hasil_display.append({
             'nama_prodi': p.nama_prodi,
             'skor_akhir': round(skor, 4),
-            'deskripsi': p.deskripsi
+            'deskripsi': p.deskripsi or "Tidak ada deskripsi" # Tambahkan safety deskripsi
         })
 
     db.session.commit()
-    
-    # Sortir hasil tertinggi
     hasil_display = sorted(hasil_display, key=lambda x: x['skor_akhir'], reverse=True)
-
     return render_template('hasil.html', user=user, hasil=hasil_display)
 
 if __name__ == '__main__':
