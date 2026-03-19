@@ -75,47 +75,49 @@ def input_survey(user_id):
     pertanyaan = PertanyaanSurvei.query.order_by(PertanyaanSurvei.pertanyaan_id.asc()).all()
 
     if not pertanyaan:
-        return "Database Error: Tabel pertanyaan_survei kosong!", 500
+        return "Gagal: Tabel pertanyaan_survei kosong di database!", 500
 
     if request.method == 'POST':
-        # 1. Hapus data lama agar tidak bentrok
-        SurveyJawaban.query.filter_by(user_id=user_id).delete()
-        PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
-        
-        # Mapping skor MOORA: A=5, B=3, C=2 (Contoh)
-        mapping = {'A': [5, 3, 2], 'B': [2, 5, 3], 'C': [1, 2, 5]}
-
-        for p in pertanyaan:
-            # Ambil jawaban dari radio button HTML
-            jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
-            
-            if jawaban:
-                # Simpan Jawaban Mentah
-                db.session.add(SurveyJawaban(user_id=user_id, pertanyaan_id=p.pertanyaan_id, jawaban=jawaban))
-                
-                # Simpan ke Penilaian Alternatif untuk hitung MOORA
-                nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
-                
-                # Loop untuk 3 Prodi (ID 1, 2, 3)
-                for idx, prodi_id in enumerate([1, 2, 3]):
-                    # Pastikan p.kriteria_id tidak None! 
-                    # Jika None, kita beri default kriteria 1 agar tidak Error 500
-                    kid = p.kriteria_id if p.kriteria_id else 1
-                    
-                    penilaian = PenilaianAlternatif(
-                        user_id=user_id,
-                        prodi_id=prodi_id,
-                        kriteria_id=kid,
-                        nilai=float(nilai_list[idx])
-                    )
-                    db.session.add(penilaian)
-        
         try:
+            # 1. Bersihkan data lama
+            SurveyJawaban.query.filter_by(user_id=user_id).delete()
+            PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
+            
+            # Mapping nilai: A=Sangat Sesuai (5), B=Sesuai (3), C=Cukup (2)
+            mapping = {'A': [5, 3, 2], 'B': [2, 5, 3], 'C': [1, 2, 5]}
+
+            for p in pertanyaan:
+                jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
+                if jawaban:
+                    # Simpan jawaban mentah
+                    db.session.add(SurveyJawaban(user_id=user_id, pertanyaan_id=p.pertanyaan_id, jawaban=jawaban))
+                    
+                    nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
+                    
+                    # Ambil ID Prodi yang ada di database kamu
+                    all_prodi = ProgramStudi.query.all()
+                    if not all_prodi:
+                        return "Gagal: Tabel program_studi kosong!", 500
+                        
+                    for idx, prd in enumerate(all_prodi[:3]): # Ambil maksimal 3 prodi pertama
+                        # Pastikan kriteria_id valid (ambil dari pertanyaan atau default ke 1)
+                        kid = p.kriteria_id if p.kriteria_id else 1
+                        
+                        penilaian = PenilaianAlternatif(
+                            user_id=user_id,
+                            prodi_id=prd.prodi_id,
+                            kriteria_id=kid,
+                            nilai=float(nilai_list[idx] if idx < len(nilai_list) else 0)
+                        )
+                        db.session.add(penilaian)
+            
             db.session.commit()
             return redirect(url_for('hitung_moora', user_id=user_id))
+            
         except Exception as e:
             db.session.rollback()
-            return f"Error Database: {str(e)}", 500
+            # Ini akan memunculkan pesan error aslinya di layar browser kamu
+            return f"Error Detail: {str(e)}", 500
 
     return render_template('input_survey.html', user=user, pertanyaan=pertanyaan)
 
