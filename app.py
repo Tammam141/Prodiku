@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+import logging
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
 from models import (
@@ -9,18 +10,23 @@ from models import (
 )
 from admin_routes import admin_bp
 
+# Setup Logging agar error muncul di Vercel Logs
+logging.basicConfig(level=logging.DEBUG)
+
 app = Flask(__name__)
 app.config.from_object(Config)
 
 # Fix URL Database & Secret Key
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tammam_rahasia_asta_2026')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tammam_asta_super_secret_2026')
 uri = os.environ.get('DATABASE_URL')
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = uri or app.config.get('SQLALCHEMY_DATABASE_URI')
 
 db.init_app(app)
-# Register blueprint admin agar link login jalan
+
+# Registrasi Blueprint Admin agar tombol Login di Footer jalan
+# Pastikan di admin_routes.py ada fungsi bernama 'admin_login'
 app.register_blueprint(admin_bp, url_prefix='/admin')
 
 # ======================
@@ -31,14 +37,19 @@ def index():
     if request.method == 'POST':
         nama = request.form.get('nama', '').strip()
         if not nama:
+            flash("Nama tidak boleh kosong!", "danger")
             return redirect(url_for('index'))
         
-        user = User(nama=nama, tipe_user='Siswa')
-        db.session.add(user)
-        db.session.commit()
-        
-        return redirect(url_for('input_bobot', user_id=user.user_id))
-    
+        try:
+            user = User(nama=nama, tipe_user='Siswa')
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('input_bobot', user_id=user.user_id))
+        except Exception as e:
+            db.session.rollback()
+            logging.error(f"Error Index: {e}")
+            return f"Error Simpan User: {e}", 500
+            
     return render_template('index.html')
 
 # ======================
@@ -50,55 +61,61 @@ def input_bobot(user_id):
     kriteria = Kriteria.query.all()
 
     if request.method == 'POST':
-        BobotKriteria.query.filter_by(user_id=user_id).delete()
-        for k in kriteria:
-            val = request.form.get(f'bobot_{k.kriteria_id}', 0)
-            bobot = BobotKriteria(
-                user_id=user_id, 
-                kriteria_id=k.kriteria_id, 
-                bobot_input=float(val)
-            )
-            db.session.add(bobot)
-        db.session.commit()
-        return redirect(url_for('input_survey', user_id=user_id))
+        try:
+            BobotKriteria.query.filter_by(user_id=user_id).delete()
+            for k in kriteria:
+                val = request.form.get(f'bobot_{k.kriteria_id}', 0)
+                db.session.add(BobotKriteria(
+                    user_id=user_id, 
+                    kriteria_id=k.kriteria_id, 
+                    bobot_input=float(val)
+                ))
+            db.session.commit()
+            return redirect(url_for('input_survey', user_id=user_id))
+        except Exception as e:
+            db.session.rollback()
+            return f"Error Simpan Bobot: {e}", 500
 
     return render_template('input_bobot.html', kriteria=kriteria, user=user)
 
 # ======================
-# 2. INPUT SURVEY (Penyebab Error 500)
+# 2. INPUT SURVEY
 # ======================
 @app.route('/survey/<int:user_id>', methods=['GET', 'POST'])
 def input_survey(user_id):
     user = User.query.get_or_404(user_id)
-    # Pastikan data pertanyaan diambil dengan benar
     pertanyaan = PertanyaanSurvei.query.order_by(PertanyaanSurvei.pertanyaan_id.asc()).all()
 
-    # Jika tabel pertanyaan kosong di DB, tampilkan pesan ini daripada Error 500
     if not pertanyaan:
-        return "<h3>Error: Tabel Pertanyaan Kosong!</h3><p>Harap isi tabel pertanyaan_survei di Neon SQL Editor.</p>", 500
+        return "Database Error: Tabel pertanyaan_survei kosong. Isi data di Neon!", 500
 
     if request.method == 'POST':
-        SurveyJawaban.query.filter_by(user_id=user_id).delete()
-        PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
-        
-        mapping = {'A': [5, 3, 2], 'B': [2, 5, 3], 'C': [1, 2, 5]}
+        try:
+            SurveyJawaban.query.filter_by(user_id=user_id).delete()
+            PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
+            
+            mapping = {'A': [5, 3, 2], 'B': [2, 5, 3], 'C': [1, 2, 5]}
 
-        for p in pertanyaan:
-            jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
-            if jawaban:
-                db.session.add(SurveyJawaban(user_id=user_id, pertanyaan_id=p.pertanyaan_id, jawaban=jawaban))
-                nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
-                
-                for idx, prodi_id in enumerate([1, 2, 3]):
-                    penilaian = PenilaianAlternatif(
-                        user_id=user_id, 
-                        prodi_id=prodi_id,
-                        kriteria_id=p.kriteria_id, 
-                        nilai=float(nilai_list[idx])
-                    )
-                    db.session.add(penilaian)
-        db.session.commit()
-        return redirect(url_for('hitung_moora', user_id=user_id))
+            for p in pertanyaan:
+                jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
+                if jawaban:
+                    db.session.add(SurveyJawaban(user_id=user_id, pertanyaan_id=p.pertanyaan_id, jawaban=jawaban))
+                    
+                    nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
+                    # Ambil prodi dinamis dari DB (max 3)
+                    prodis = ProgramStudi.query.limit(3).all()
+                    for idx, prd in enumerate(prodis):
+                        db.session.add(PenilaianAlternatif(
+                            user_id=user_id, 
+                            prodi_id=prd.prodi_id,
+                            kriteria_id=p.kriteria_id, 
+                            nilai=float(nilai_list[idx])
+                        ))
+            db.session.commit()
+            return redirect(url_for('hitung_moora', user_id=user_id))
+        except Exception as e:
+            db.session.rollback()
+            return f"Error Simpan Survey: {e}", 500
 
     return render_template('input_survey.html', user=user, pertanyaan=pertanyaan)
 
@@ -108,11 +125,15 @@ def input_survey(user_id):
 @app.route('/hasil/<int:user_id>')
 def hitung_moora(user_id):
     user = User.query.get_or_404(user_id)
-    kriteria = Kriteria.query.all()
     prodi = ProgramStudi.query.all()
+    kriteria = Kriteria.query.all()
     bobot_list = BobotKriteria.query.filter_by(user_id=user_id).all()
     penilaian_list = PenilaianAlternatif.query.filter_by(user_id=user_id).all()
 
+    if not bobot_list or not penilaian_list:
+        return "Data belum lengkap untuk perhitungan.", 400
+
+    # Normalisasi Bobot
     total_bobot = sum(b.bobot_input for b in bobot_list) or 1
     b_norm = {b.kriteria_id: b.bobot_input / total_bobot for b in bobot_list}
 
@@ -127,11 +148,24 @@ def hitung_moora(user_id):
             skor += b_norm.get(k.kriteria_id, 0) * nilai
         
         db.session.add(HasilKeputusan(user_id=user_id, prodi_id=p.prodi_id, skor_akhir=skor))
-        hasil_display.append({'nama_prodi': p.nama_prodi, 'skor_akhir': round(skor, 4), 'deskripsi': p.deskripsi})
+        hasil_display.append({
+            'nama_prodi': p.nama_prodi, 
+            'skor_akhir': round(skor, 4), 
+            'deskripsi': p.deskripsi or "Belum ada deskripsi."
+        })
 
     db.session.commit()
     hasil_display = sorted(hasil_display, key=lambda x: x['skor_akhir'], reverse=True)
     return render_template('hasil.html', user=user, hasil=hasil_display)
+
+# Rute Debug (Opsional untuk cek kesehatan DB)
+@app.route('/test-db')
+def test_db():
+    try:
+        User.query.limit(1).all()
+        return "Koneksi Database Neon BERHASIL!"
+    except Exception as e:
+        return f"Koneksi Database GAGAL: {e}", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
