@@ -64,14 +64,20 @@ class PertanyaanSurvei(db.Model):
     opsi_b = db.Column(db.Text)
     opsi_c = db.Column(db.Text)
     
-class SurveyJawaban(db.Model):
-    __tablename__ = 'survey_jawaban'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    pertanyaan_id = db.Column(db.Integer, db.ForeignKey('pertanyaan_survei.pertanyaan_id'), nullable=False)
-    jawaban = db.Column(db.String(10), nullable=False) # Diubah ke 10 agar bisa menampung jawaban teks jika perlu
-    tanggal_input = db.Column(db.Date, default=date.today)
+class Kriteria(db.Model):
+    __tablename__ = 'kriteria'
+    kriteria_id = db.Column(db.Integer, primary_key=True)
+    kode_kriteria = db.Column(db.String(10), nullable=False)
+    nama_kriteria = db.Column(db.String(100), nullable=False)
+    penjelasan = db.Column(db.Text)
     
+    # Gabungkan relasi di sini
+    pertanyaan = db.relationship('PertanyaanSurvei', 
+                                 backref='kriteria_ref', 
+                                 lazy=True, 
+                                 cascade="all, delete-orphan",
+                                 order_by="PertanyaanSurvei.pertanyaan_id")
+        
 class Kriteria(db.Model):
     pertanyaan = db.relationship('PertanyaanSurvei', 
                                  backref='kriteria_ref', 
