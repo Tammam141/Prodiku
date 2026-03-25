@@ -10,13 +10,13 @@ from models import (
 )
 from admin_routes import admin_bp
 
-# Setup Logging agar error muncul di Vercel Logs
+# Setup Logging
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Fix URL Database & Secret Key
+# Fix URL Database & Secret Key (Penting untuk Vercel & PostgreSQL)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tammam_asta_super_secret_2026')
 uri = os.environ.get('DATABASE_URL')
 if uri and uri.startswith("postgres://"):
@@ -25,12 +25,21 @@ app.config['SQLALCHEMY_DATABASE_URI'] = uri or app.config.get('SQLALCHEMY_DATABA
 
 db.init_app(app)
 
-# Registrasi Blueprint Admin agar tombol Login di Footer jalan
-# Pastikan di admin_routes.py ada fungsi bernama 'admin_login'
+# =========================================================
+# FUNGSI PERBAIKAN: OTOMATIS BUAT TABEL JIKA BELUM ADA
+# =========================================================
+with app.app_context():
+    try:
+        db.create_all()
+        logging.info("Database tables verified/created successfully.")
+    except Exception as e:
+        logging.error(f"Database Initialization Error: {e}")
+
+# Registrasi Blueprint
 app.register_blueprint(admin_bp, url_prefix='/admin')
 
 # ======================
-# HALAMAN INDEX (Input Nama)
+# HALAMAN INDEX
 # ======================
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -60,6 +69,10 @@ def input_bobot(user_id):
     user = User.query.get_or_404(user_id)
     kriteria = Kriteria.query.all()
 
+    # Jika tabel kriteria kosong, Moora tidak bisa jalan
+    if not kriteria:
+        return "Database Error: Data Kriteria belum diisi oleh Admin.", 500
+
     if request.method == 'POST':
         try:
             BobotKriteria.query.filter_by(user_id=user_id).delete()
@@ -74,6 +87,7 @@ def input_bobot(user_id):
             return redirect(url_for('input_survey', user_id=user_id))
         except Exception as e:
             db.session.rollback()
+            logging.error(f"Error Bobot: {e}")
             return f"Error Simpan Bobot: {e}", 500
 
     return render_template('input_bobot.html', kriteria=kriteria, user=user)
@@ -87,7 +101,7 @@ def input_survey(user_id):
     pertanyaan = PertanyaanSurvei.query.order_by(PertanyaanSurvei.pertanyaan_id.asc()).all()
 
     if not pertanyaan:
-        return "Database Error: Tabel pertanyaan_survei kosong. Isi data di Neon!", 500
+        return "Database Error: Tabel pertanyaan_survei kosong. Harap isi data kriteria dan pertanyaan melalui dashboard admin.", 500
 
     if request.method == 'POST':
         try:
@@ -95,6 +109,7 @@ def input_survey(user_id):
             PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
             
             mapping = {'A': [5, 3, 2], 'B': [2, 5, 3], 'C': [1, 2, 5]}
+            prodis = ProgramStudi.query.limit(3).all()
 
             for p in pertanyaan:
                 jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
@@ -102,8 +117,6 @@ def input_survey(user_id):
                     db.session.add(SurveyJawaban(user_id=user_id, pertanyaan_id=p.pertanyaan_id, jawaban=jawaban))
                     
                     nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
-                    # Ambil prodi dinamis dari DB (max 3)
-                    prodis = ProgramStudi.query.limit(3).all()
                     for idx, prd in enumerate(prodis):
                         db.session.add(PenilaianAlternatif(
                             user_id=user_id, 
@@ -115,6 +128,7 @@ def input_survey(user_id):
             return redirect(url_for('hitung_moora', user_id=user_id))
         except Exception as e:
             db.session.rollback()
+            logging.error(f"Error Survey: {e}")
             return f"Error Simpan Survey: {e}", 500
 
     return render_template('input_survey.html', user=user, pertanyaan=pertanyaan)
@@ -131,41 +145,38 @@ def hitung_moora(user_id):
     penilaian_list = PenilaianAlternatif.query.filter_by(user_id=user_id).all()
 
     if not bobot_list or not penilaian_list:
-        return "Data belum lengkap untuk perhitungan.", 400
+        flash("Data penilaian belum lengkap.", "warning")
+        return redirect(url_for('index'))
 
     # Normalisasi Bobot
     total_bobot = sum(b.bobot_input for b in bobot_list) or 1
     b_norm = {b.kriteria_id: b.bobot_input / total_bobot for b in bobot_list}
 
-    HasilKeputusan.query.filter_by(user_id=user_id).delete()
-    hasil_display = []
-
-    for p in prodi:
-        skor = 0
-        for k in kriteria:
-            nilai_obj = next((pn for pn in penilaian_list if pn.prodi_id == p.prodi_id and pn.kriteria_id == k.kriteria_id), None)
-            nilai = nilai_obj.nilai if nilai_obj else 0
-            skor += b_norm.get(k.kriteria_id, 0) * nilai
-        
-        db.session.add(HasilKeputusan(user_id=user_id, prodi_id=p.prodi_id, skor_akhir=skor))
-        hasil_display.append({
-            'nama_prodi': p.nama_prodi, 
-            'skor_akhir': round(skor, 4), 
-            'deskripsi': p.deskripsi or "Belum ada deskripsi."
-        })
-
-    db.session.commit()
-    hasil_display = sorted(hasil_display, key=lambda x: x['skor_akhir'], reverse=True)
-    return render_template('hasil.html', user=user, hasil=hasil_display)
-
-# Rute Debug (Opsional untuk cek kesehatan DB)
-@app.route('/test-db')
-def test_db():
     try:
-        User.query.limit(1).all()
-        return "Koneksi Database Neon BERHASIL!"
+        HasilKeputusan.query.filter_by(user_id=user_id).delete()
+        hasil_display = []
+
+        for p in prodi:
+            skor = 0
+            for k in kriteria:
+                nilai_obj = next((pn for pn in penilaian_list if pn.prodi_id == p.prodi_id and pn.kriteria_id == k.kriteria_id), None)
+                nilai = nilai_obj.nilai if nilai_obj else 0
+                skor += b_norm.get(k.kriteria_id, 0) * nilai
+            
+            db.session.add(HasilKeputusan(user_id=user_id, prodi_id=p.prodi_id, skor_akhir=skor))
+            hasil_display.append({
+                'nama_prodi': p.nama_prodi, 
+                'skor_akhir': round(skor, 4), 
+                'deskripsi': p.deskripsi or "Belum ada deskripsi."
+            })
+
+        db.session.commit()
+        hasil_display = sorted(hasil_display, key=lambda x: x['skor_akhir'], reverse=True)
+        return render_template('hasil.html', user=user, hasil=hasil_display)
     except Exception as e:
-        return f"Koneksi Database GAGAL: {e}", 500
+        db.session.rollback()
+        logging.error(f"Error Moora: {e}")
+        return f"Error Perhitungan: {e}", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
