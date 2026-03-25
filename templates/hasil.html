@@ -235,41 +235,58 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-    async function downloadPDF() {
-        const { jsPDF } = window.jspdf;
-        const element = document.querySelector("#report-content"); 
-        const btnArea = document.querySelector(".btn-container");
-        
-        // 1. Sembunyikan tombol sebelum capture
-        btnArea.style.display = "none";
+async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const element = document.querySelector("#report-content"); 
+    const btnArea = document.querySelector(".btn-container");
+    
+    // 1. Sembunyikan tombol
+    btnArea.style.display = "none";
 
-        // 2. Capture dengan High Scale (3x) untuk hasil Tajam
-        const canvas = await html2canvas(element, { 
-            scale: 3, 
-            useCORS: true,
-            backgroundColor: "#f4f7f6",
-            logging: false,
-            // Perbaikan render teks putih di header
-            onclone: (documentClone) => {
-                const header = documentClone.querySelector(".header");
-                header.style.background = "linear-gradient(135deg, #1e7e34 0%, #1565c0 100%)";
-            }
-        });
+    // 2. Capture dengan pengaturan khusus untuk menghilangkan kabut putih
+    const canvas = await html2canvas(element, { 
+        scale: 3, 
+        useCORS: true,
+        backgroundColor: "#ffffff", // Paksa background putih solid (bukan transparan)
+        logging: false,
+        onclone: (documentClone) => {
+            // Manipulasi elemen di dalam klon sebelum difoto
+            const containerClone = documentClone.querySelector("#report-content");
+            const cards = documentClone.querySelectorAll(".result-card");
+            const header = documentClone.querySelector(".header");
 
-        // 3. Gunakan PNG (Tanpa kompresi buram seperti JPEG)
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        
-        // 4. Tambahkan ke PDF dengan kualitas maksimal
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'NONE');
-        pdf.save('Hasil_Prodi_{{ user.nama }}.pdf');
+            // Hilangkan semua shadow & transparansi yang bikin pudar di PDF
+            containerClone.style.boxShadow = "none";
+            containerClone.style.border = "none";
+            
+            header.style.background = "#1e7e34"; // Paksa warna solid (Hijau tua) alih-alih gradient pudar
+            header.style.color = "#ffffff";
 
-        // 5. Kembalikan tombol
-        btnArea.style.display = "flex";
-    }
+            cards.forEach(card => {
+                card.style.boxShadow = "none"; // Hapus shadow kartu
+                card.style.backgroundColor = "#ffffff"; // Pastikan putih pekat
+                card.style.border = "1px solid #dddddd"; // Ganti dengan border tipis agar tetap rapi
+                
+                // Pastikan teks di dalam kartu tetap hitam pekat
+                card.querySelector("h3").style.color = "#000000";
+                card.querySelector("p").style.color = "#333333";
+            });
+        }
+    });
+
+    // 3. Gunakan format PNG (Lebih tajam & anti-pudar dibanding JPEG)
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'NONE');
+    pdf.save('Hasil_Prodi_{{ user.nama }}.pdf');
+
+    // 4. Kembalikan tombol
+    btnArea.style.display = "flex";
+}
 </script>
 
 </body>
