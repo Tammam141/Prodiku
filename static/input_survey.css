@@ -1,362 +1,187 @@
-  :root {
-      --primary-green: #28a745;
-      /* A classic, elegant green */
-      --primary-green-hover: #218838;
-      /* Slightly darker for hover */
-      --header-gradient-start: #4CAF50;
-      /* Green from home hero */
-      --header-gradient-end: #2196F3;
-      /* Blue from home hero */
-      --text-dark: #343a40;
-      /* Deep charcoal for headings */
-      --text-body: #495057;
-      /* Softer dark for body text */
-      --bg-light: #f8f9fa;
-      /* Very light, almost white background */
-      --card-bg: #ffffff;
-      /* Pure white for question cards */
-      --border-subtle: #e9ecef;
-      /* Very light grey border */
-      --input-focus-glow: rgba(40, 167, 69, 0.2);
-      /* Subtle green glow on focus */
-      --shadow-soft: rgba(0, 0, 0, 0.08);
-      /* Soft, diffused shadow */
-      --accent-blue: #007bff;
-      /* A clean blue for steps/accents (if not in gradient) */
-  }
+:root {
+    --primary-green: #28a745;
+    --primary-green-hover: #218838;
+    --header-gradient-start: #4CAF50;
+    --header-gradient-end: #2196F3;
+    --text-dark: #343a40;
+    --text-body: #495057;
+    --bg-light: #f8f9fa;
+    --card-bg: #ffffff;
+    --border-subtle: #e9ecef;
+    --shadow-soft: rgba(0, 0, 0, 0.08);
+    --white: #ffffff;
+}
 
-  * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-  }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-  body {
-      font-family: 'Open Sans', sans-serif;
-      background-color: var(--bg-light);
-      /* Solid, very light background */
-      color: var(--text-body);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      /* Allow content to stack and scroll */
-      align-items: center;
-      /* Center horizontally */
-      padding: 30px;
-      overflow-x: hidden;
-  }
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-body);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: clamp(10px, 4vw, 40px);
+}
 
-  .container {
-      max-width: 800px;
-      width: 100%;
-      background-color: var(--card-bg);
-      border-radius: 18px;
-      box-shadow: 0 15px 45px var(--shadow-soft);
-      text-align: left;
-      opacity: 1;
-      animation: fadeIn 0.8s ease-out forwards;
-      overflow: hidden;
-      /* Ensure header gradient stays within bounds */
-  }
+.container {
+    max-width: 800px;
+    width: 100%;
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 0 15px 45px var(--shadow-soft);
+    overflow: hidden;
+    animation: fadeIn 0.6s ease-out;
+}
 
-  @keyframes fadeIn {
-      from {
-          opacity: 0;
-          transform: translateY(20px);
-      }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-      to {
-          opacity: 1;
-          transform: translateY(0);
-      }
-  }
+.header-colorful {
+    background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+    padding: clamp(30px, 5vw, 50px);
+    color: var(--white);
+    text-align: center;
+}
 
-  .header-colorful {
-      background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
-      padding: 40px 60px;
-      color: var(--white);
-      text-align: center;
-      border-top-left-radius: 18px;
-      border-top-right-radius: 18px;
-      position: relative;
-      z-index: 1;
-  }
+.header-colorful h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #fff;
+}
 
-  .header-colorful h2 {
-      font-family: 'Montserrat', sans-serif;
-      margin-bottom: 10px;
-      color: var(--white);
-      font-size: 2.8em;
-      font-weight: 700;
-      letter-spacing: -0.8px;
-      line-height: 1.2;
-  }
+.progress-indicator {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
 
-  .header-colorful p.user-greeting {
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 1.1em;
-      line-height: 1.6;
-      max-width: 650px;
-      margin: 0 auto;
-  }
+.form-content {
+    padding: clamp(20px, 5vw, 50px);
+}
 
-  .progress-indicator {
-      text-align: center;
-      margin-bottom: 25px;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 1em;
-      font-weight: 600;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-  }
+.pertanyaan-group {
+    margin-bottom: 30px;
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid var(--border-subtle);
+    background: #fff;
+    transition: 0.3s;
+    opacity: 0; /* Untuk animasi scroll */
+    transform: translateY(20px);
+}
 
-  .progress-indicator strong {
-      color: var(--white);
-  }
+/* Class untuk trigger animasi JS */
+.pertanyaan-group.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
 
-  .form-content {
-      padding: 40px 60px 60px;
-  }
+.pertanyaan-group:hover {
+    border-color: var(--primary-green);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
 
-  .pertanyaan-group {
-      margin-bottom: 35px;
-      background-color: var(--card-bg);
-      padding: 30px;
-      /* More internal padding */
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-      /* Softer shadow for each question */
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      border: 1px solid var(--border-subtle);
-      /* Subtle border */
-  }
+.question-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
 
-  .pertanyaan-group:hover {
-      transform: translateY(-3px);
-      /* Subtle lift on hover */
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      /* Slightly more prominent shadow */
-  }
+.radio-option {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    background: #f9f9f9;
+}
 
-  .pertanyaan-group p.question-text {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 600;
-      margin-bottom: 20px;
-      /* More space below question */
-      color: var(--text-dark);
-      font-size: 1.15em;
-      line-height: 1.5;
-  }
+.radio-option:hover {
+    background: #f0fdf4;
+}
 
-  .radio-option {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-      /* Space between options */
-      cursor: pointer;
-      position: relative;
-      padding: 12px 15px;
-      /* Padding for click area */
-      border-radius: 8px;
-      transition: background-color 0.2s ease, box-shadow 0.2s ease;
-      border: 1px solid transparent;
-      /* Placeholder for border on hover/checked */
-  }
+.radio-option input[type="radio"] {
+    display: none;
+}
 
-  .radio-option:hover {
-      background-color: rgba(var(--primary-green-rgb, 40, 167, 69), 0.05);
-      /* Very light green background on hover */
-      border-color: rgba(var(--primary-green-rgb, 40, 167, 69), 0.3);
-      /* Subtle border on hover */
-  }
+.custom-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    margin-right: 15px;
+    position: relative;
+    flex-shrink: 0;
+    background: #fff;
+}
 
-  .radio-option input[type="radio"] {
-      /* Hide default radio button */
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-  }
+.radio-option input:checked + .custom-radio {
+    border-color: var(--primary-green);
+}
 
-  .custom-radio {
-      height: 22px;
-      width: 22px;
-      background-color: var(--border-subtle);
-      border-radius: 50%;
-      display: inline-block;
-      position: relative;
-      margin-right: 15px;
-      flex-shrink: 0;
-      /* Prevent it from shrinking */
-      transition: background-color 0.2s ease, border-color 0.2s ease;
-      border: 2px solid var(--border-subtle);
-  }
+.radio-option input:checked + .custom-radio::after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background: var(--primary-green);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
-  /* Inner circle for custom radio */
-  .custom-radio::after {
-      content: "";
-      position: absolute;
-      display: none;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--primary-green);
-  }
+.option-text {
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
 
-  /* When radio button is checked */
-  .radio-option input[type="radio"]:checked~.custom-radio {
-      background-color: var(--white);
-      border-color: var(--primary-green);
-      /* Green border when checked */
-  }
+button[type="submit"] {
+    width: 100%;
+    background-color: var(--primary-green);
+    color: #fff;
+    border: none;
+    padding: 18px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 20px;
+    box-shadow: 0 10px 20px rgba(40, 167, 69, 0.2);
+}
 
-  .radio-option input[type="radio"]:checked~.custom-radio::after {
-      display: block;
-  }
+button[type="submit"]:hover {
+    background-color: var(--primary-green-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(40, 167, 69, 0.3);
+}
 
-  .radio-option .option-text {
-      color: var(--text-body);
-      font-size: 1.05em;
-      line-height: 1.5;
-  }
-
-  /* Submit button */
-  button[type="submit"] {
-      width: 100%;
-      background-color: var(--primary-green);
-      color: var(--white);
-      border: none;
-      padding: 18px;
-      font-size: 1.2em;
-      margin-top: 40px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-      font-weight: 600;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-  }
-
-  button[type="submit"]:hover {
-      background-color: var(--primary-green-hover);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-      .container {
-          padding: 0;
-      }
-
-      .header-colorful,
-      .form-content {
-          padding: 40px 30px;
-      }
-
-      .header-colorful h2 {
-          font-size: 2.2em;
-      }
-
-      .header-colorful p.user-greeting {
-          font-size: 1em;
-      }
-
-      .pertanyaan-group {
-          padding: 25px;
-          margin-bottom: 30px;
-      }
-
-      .pertanyaan-group p.question-text {
-          font-size: 1.05em;
-      }
-
-      .radio-option {
-          padding: 10px 12px;
-          margin-bottom: 12px;
-      }
-
-      .custom-radio {
-          height: 20px;
-          width: 20px;
-      }
-
-      .custom-radio::after {
-          width: 10px;
-          height: 10px;
-      }
-
-      .radio-option .option-text {
-          font-size: 1em;
-      }
-
-      button[type="submit"] {
-          padding: 16px;
-          font-size: 1.1em;
-      }
-  }
-
-  @media (max-width: 500px) {
-      body {
-          padding: 20px;
-      }
-
-      .header-colorful,
-      .form-content {
-          padding: 30px 20px;
-      }
-
-      .header-colorful h2 {
-          font-size: 1.8em;
-      }
-
-      .header-colorful p.user-greeting {
-          font-size: 0.9em;
-      }
-
-      .progress-indicator {
-          font-size: 0.9em;
-          margin-bottom: 20px;
-      }
-
-      .pertanyaan-group {
-          padding: 20px;
-          margin-bottom: 25px;
-      }
-
-      .pertanyaan-group p.question-text {
-          font-size: 1em;
-          margin-bottom: 15px;
-      }
-
-      .radio-option {
-          padding: 8px 10px;
-          margin-bottom: 10px;
-      }
-
-      .custom-radio {
-          height: 18px;
-          width: 18px;
-      }
-
-      .custom-radio::after {
-          width: 8px;
-          height: 8px;
-      }
-
-      .radio-option .option-text {
-          font-size: 0.95em;
-      }
-
-      button[type="submit"] {
-          font-size: 1em;
-          padding: 14px;
-      }
-  }
+/* Responsivitas untuk layar sangat kecil (HP) */
+@media (max-width: 480px) {
+    .pertanyaan-group {
+        padding: 15px;
+    }
+    .header-colorful {
+        padding: 30px 15px;
+    }
+    .form-content {
+        padding: 20px 15px;
+    }
+}

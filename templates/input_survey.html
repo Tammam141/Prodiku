@@ -3,55 +3,71 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Survei Preferensi Program Studi - ProdiKu</title>
+    <title>Survei Minat - ProdiKu</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../static/input_survey.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='input_survey.css') }}">
 </head>
 
 <body>
 
     <div class="container">
         <div class="header-colorful">
-            <div class="progress-indicator">Langkah <strong class="step-number">2</strong> dari 3</div>
-            <h2>Survei Preferensi Program Studi</h2>
-            <p class="user-greeting">Halo, {{ user.nama }}! Mari kita selami minat dan preferensimu.</p>
+            <div class="progress-indicator">Langkah <strong>2</strong> dari 3</div>
+            <h2>Survei Minat</h2>
+            <p class="user-greeting">Halo, {{ user.nama }}! Mari kita selami minat dan preferensi belajarmu.</p>
         </div>
 
         <div class="form-content">
             <form method="POST">
-             {% for p in pertanyaan %}
-<div class="pertanyaan-group">
-    <p class="question-text">{{ loop.index }}. {{ p.teks_pertanyaan }}</p> 
-    
-    <label class="radio-option">
-        <input type="radio" name="jawaban[{{ p.pertanyaan_id }}]" value="A" required>
-        <span class="custom-radio"></span>
-        <span class="option-text">{{ p.opsi_a }}</span>
-    </label>
+                {% for p in pertanyaan %}
+                <div class="pertanyaan-group animated">
+                    <p class="question-text">{{ loop.index }}. {{ p.teks_pertanyaan }}</p> 
+                    
+                    <label class="radio-option">
+                        <input type="radio" name="jawaban[{{ p.pertanyaan_id }}]" value="A" required>
+                        <span class="custom-radio"></span>
+                        <span class="option-text">{{ p.opsi_a }}</span>
+                    </label>
 
-    <label class="radio-option">
-        <input type="radio" name="jawaban[{{ p.pertanyaan_id }}]" value="B" required>
-        <span class="custom-radio"></span>
-        <span class="option-text">{{ p.opsi_b }}</span>
-    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="jawaban[{{ p.pertanyaan_id }}]" value="B" required>
+                        <span class="custom-radio"></span>
+                        <span class="option-text">{{ p.opsi_b }}</span>
+                    </label>
 
-    <label class="radio-option">
-        <input type="radio" name="jawaban[{{ p.pertanyaan_id }}]" value="C" required>
-        <span class="custom-radio"></span>
-        <span class="option-text">{{ p.opsi_c }}</span>
-    </label>
-</div>
-{% endfor %}
+                    <label class="radio-option">
+                        <input type="radio" name="jawaban[{{ p.pertanyaan_id }}]" value="C" required>
+                        <span class="custom-radio"></span>
+                        <span class="option-text">{{ p.opsi_c }}</span>
+                    </label>
+                </div>
+                {% endfor %}
 
-                <button type="submit">Kirim Jawaban <i class="fas fa-arrow-right"></i></button>
+                <button type="submit">
+                    Lihat Hasil Rekomendasi <i class="fas fa-chart-pie"></i>
+                </button>
             </form>
         </div>
     </div>
 
+    <script>
+        // Animasi muncul pertanyaan satu per satu saat di-scroll
+        document.addEventListener('DOMContentLoaded', function () {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.pertanyaan-group').forEach((el) => {
+                observer.observe(el);
+            });
+        });
+    </script>
 </body>
 
 </html>
