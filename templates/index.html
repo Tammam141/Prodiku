@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Selamat Datang - ProdiKu SPK</title>
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
+
 <body>
 
     <nav class="navbar">
@@ -17,38 +19,49 @@
                 <li><a href="#hero">Beranda</a></li>
                 <li><a href="#features">Mengapa Kami?</a></li>
                 <li><a href="#how-it-works">Cara Kerja</a></li>
+                <li><a href="#team">Tim ASTA</a></li>
             </ul>
         </div>
     </nav>
 
     <section id="hero" class="hero">
-        <div class="hero-content">
-            <h1>Bingung Pilih Jurusan di PNJ?</h1>
-            <p>Gunakan Sistem Pendukung Keputusan cerdas kami untuk menemukan Program Studi yang paling sesuai dengan minat dan potensi dirimu.</p>
+        <div class="hero-content animated">
+            <h1>Temukan Program Studi Impianmu</h1>
+            <p>
+                Sistem Pendukung Keputusan pemilihan program studi menggunakan metode <strong>MOORA</strong>. 
+                Kami membantu Anda menganalisis minat dan preferensi untuk hasil yang objektif dan personal.
+            </p>
             <form action="{{ url_for('mulai_survei') }}" method="POST">
-                <button type="submit" class="cta-button">Mulai Konsultasi Gratis</button>
+                <button type="submit" class="cta-button">
+                    <i class="fas fa-arrow-right"></i> Mulai Survei Sekarang
+                </button>
             </form>
         </div>
     </section>
 
     <section id="features" class="features section-padding text-center">
         <div class="container">
-            <h2 class="section-heading">Mengapa Menggunakan ProdiKu?</h2>
+            <h2 class="section-heading">Mengapa Memilih ProdiKu?</h2>
             <div class="feature-grid">
                 <div class="feature-item">
-                    <i class="fas fa-microchip"></i>
-                    <h3>Algoritma MOORA</h3>
-                    <p>Menggunakan perhitungan <i>Multi-Objective Optimization on the basis of Ratio Analysis</i> untuk hasil yang objektif.</p>
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>Rekomendasi Akurat</h3>
+                    <p>Dapatkan saran program studi yang disesuaikan secara presisi dengan karakteristik unik Anda.</p>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-user-check"></i>
-                    <h3>Personalisasi</h3>
-                    <p>Hasil rekomendasi disesuaikan dengan bobot kriteria yang Anda anggap paling penting (biaya, minat, atau prospek).</p>
+                    <i class="fas fa-poll"></i>
+                    <h3>Survei Interaktif</h3>
+                    <p>Proses pengisian survei yang mudah dan cepat, dirancang untuk kenyamanan pengguna.</p>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-university"></i>
-                    <h3>Data Akurat PNJ</h3>
-                    <p>Informasi program studi terintegrasi langsung dengan profil pendidikan di Politeknik Negeri Jakarta.</p>
+                    <i class="fas fa-brain"></i>
+                    <h3>Metode MOORA</h3>
+                    <p>Perhitungan berbasis optimasi multi-objektif untuk menghasilkan peringkat prodi terbaik.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Pilihan Karir</h3>
+                    <p>Membantu membuka jalan menuju masa depan karir yang sesuai dengan kompetensi diri.</p>
                 </div>
             </div>
         </div>
@@ -56,33 +69,78 @@
 
     <section id="how-it-works" class="how-it-works section-padding text-center">
         <div class="container">
-            <h2 class="section-heading">3 Langkah Menuju Masa Depan</h2>
+            <h2 class="section-heading">Bagaimana ProdiKu Bekerja?</h2>
             <div class="steps-grid">
                 <div class="step-item">
                     <span class="step-number">1</span>
-                    <h3>Atur Prioritas</h3>
-                    <p>Tentukan tingkat kepentingan kriteria pemilihan Anda melalui input bobot.</p>
+                    <h3>Input Bobot</h3>
+                    <p>Tentukan prioritas kriteria Anda (biaya, prospek, dll) untuk mempersonalisasi hasil.</p>
                 </div>
                 <div class="step-item">
                     <span class="step-number">2</span>
-                    <h3>Jawab Survei</h3>
-                    <p>Ikuti survei singkat mengenai ketertarikan Anda pada bidang tertentu.</p>
+                    <h3>Isi Survei Minat</h3>
+                    <p>Jawab beberapa pertanyaan singkat mengenai minat dan preferensi belajar Anda.</p>
                 </div>
                 <div class="step-item">
                     <span class="step-number">3</span>
-                    <h3>Dapatkan Hasil</h3>
-                    <p>Sistem akan menampilkan peringkat prodi yang paling cocok untuk Anda pilih.</p>
+                    <h3>Hasil Rekomendasi</h3>
+                    <p>Sistem akan menampilkan daftar prodi PNJ yang paling cocok untuk Anda ambil.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="features section-padding text-center">
+        <div class="container">
+            <h2 class="section-heading">Tim ASTA</h2>
+            <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">
+                <div class="feature-item">
+                    <i class="fas fa-user-circle"></i>
+                    <h3>AZRIEL KAMAL</h3>
+                    <p>Anggota Tim ASTA</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-user-circle"></i>
+                    <h3>TAMMAM TANJUNG</h3>
+                    <p>Anggota Tim ASTA</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-user-circle"></i>
+                    <h3>RAFLYALIF ADZANI</h3>
+                    <p>Anggota Tim ASTA</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-user-circle"></i>
+                    <h3>SAFINA QAIDA</h3>
+                    <p>Anggota Tim ASTA</p>
                 </div>
             </div>
         </div>
     </section>
 
     <footer class="footer">
-        <div class="container text-center">
-            <p>Dibuat dengan <i class="fas fa-heart" style="color: #e74c3c;"></i> oleh Tammam - PNJ 2026</p>
-            <p>&copy; 2026 ProdiKu. | <a href="/admin">Portal Admin</a></p>
+        <div class="container">
+            <p>Dibuat dengan <i class="fas fa-heart" style="color: #28a745;"></i> oleh <strong>Tim ASTA</strong></p>
+            <p>&copy; 2026 ProdiKu. Politeknik Negeri Jakarta. | <a href="/admin">Login Admin</a></p>
         </div>
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Intersection Observer untuk animasi scroll
+            const observerOptions = { threshold: 0.2 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.section-heading, .feature-item, .step-item').forEach((el) => {
+                observer.observe(el);
+            });
+        });
+    </script>
 </body>
 </html>
