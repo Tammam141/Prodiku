@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <title>Hasil Rekomendasi - ProdiKu</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         :root {
-            --primary: #28a745;
-            --secondary: #2196F3;
-            --text-dark: #343a40;
-            --bg-body: #e9ecef;
+            --primary-dark: #1e7e34; /* Hijau Solid */
+            --secondary-dark: #1565c0; /* Biru Solid */
+            --text-dark: #2c3e50;
+            --bg-body: #f4f7f6;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,7 +19,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-body);
-            color: #495057;
+            color: var(--text-dark);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,159 +27,172 @@
             padding: 20px;
         }
 
+        /* Container Utama */
         .container {
-            max-width: 700px; /* Dipersempit agar lebih estetik dan tidak melebar */
+            max-width: 650px;
             width: 100%;
             background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
             overflow: hidden;
             animation: slideUp 0.6s ease-out;
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Header dengan Kontras Tinggi (Anti-Pudar) */
         .header {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 40px 30px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+            color: #ffffff;
+            padding: 45px 30px;
             text-align: center;
         }
 
         .header h2 {
-            font-size: 1.8em;
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: 800;
             margin-bottom: 8px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
         }
 
-        .content { padding: 30px; }
+        .header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
 
-        /* PENGGANTI TABEL: CARD SYSTEM */
+        .content { padding: 30px 25px; }
+
+        /* Card List Style */
         .result-card {
             display: flex;
             align-items: center;
             background: #fff;
-            border: 1.5px solid #f0f0f0;
-            border-radius: 15px;
+            border: 2px solid #f0f0f0;
+            border-radius: 18px;
             padding: 20px;
             margin-bottom: 15px;
-            transition: all 0.3s ease;
-            position: relative;
+            transition: transform 0.3s ease;
         }
 
-        .result-card:hover {
-            border-color: var(--secondary);
-            transform: translateX(5px);
-        }
-
-        /* Lingkaran Ranking */
         .rank-circle {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             background: #f8f9fa;
-            border-radius: 50%;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 1.2rem;
             color: var(--text-dark);
-            margin-right: 20px;
+            margin-right: 18px;
             flex-shrink: 0;
             border: 2px solid #eee;
         }
 
-        .rank-1 .rank-circle { background: var(--primary); color: #fff; border-color: var(--primary); }
+        /* Highlight Rank 1 */
+        .rank-1 {
+            border-color: #2ecc71;
+            background: linear-gradient(to right, #fafffa, #ffffff);
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.1);
+        }
+        .rank-1 .rank-circle {
+            background: #2ecc71;
+            color: #fff;
+            border-color: #27ae60;
+        }
 
-        /* Informasi Prodi */
         .prodi-info { flex-grow: 1; }
         .prodi-info h3 { 
-            font-size: 1.1rem; 
-            color: var(--text-dark); 
-            margin-bottom: 4px;
+            font-size: 1.05rem; 
+            color: #2c3e50; 
             font-weight: 700;
+            margin-bottom: 3px;
         }
         .prodi-info p { 
-            font-size: 0.85rem; 
-            color: #777; 
+            font-size: 0.8rem; 
+            color: #555; 
             line-height: 1.4;
         }
 
-        /* Skor & Badge */
         .score-box {
             text-align: right;
-            margin-left: 15px;
+            margin-left: 10px;
+            min-width: 80px;
         }
         .score-box strong {
             display: block;
             font-size: 1.1rem;
-            color: var(--primary);
+            color: var(--primary-dark);
         }
-        
+        .score-label {
+            font-size: 0.6rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         .status-badge {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 800;
             text-transform: uppercase;
-            margin-top: 5px;
+            margin-top: 6px;
             color: #fff;
         }
-        .bg-baik { background: var(--primary); }
-        .bg-cukup { background: var(--secondary); }
-        .bg-kurang { background: #adb5bd; }
+        .bg-baik { background: #2ecc71; }
+        .bg-cukup { background: #3498db; }
+        .bg-kurang { background: #95a5a6; }
 
-        /* TOMBOL (TETAP SAMA SEPERTI ASLI) */
+        /* Tombol */
         .btn-container {
             display: flex;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 12px;
+            margin-top: 25px;
         }
 
         .btn {
             flex: 1;
-            padding: 15px 25px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 14px;
             color: white;
-            font-weight: 600;
+            font-weight: 700;
             text-decoration: none;
             text-align: center;
-            transition: 0.3s;
             border: none;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
+            transition: all 0.2s;
         }
 
-        .btn-home { background-color: var(--primary); }
-        .btn-simpan { background-color: #dc3545; }
+        .btn-home { background-color: #f1f2f6; color: #2c3e50; }
+        .btn-simpan { background-color: #e74c3c; box-shadow: 0 8px 20px rgba(231, 76, 60, 0.2); }
 
-        .btn:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            opacity: 0.9;
-        }
+        .btn:hover { transform: translateY(-3px); opacity: 0.9; }
 
-        @media (max-width: 600px) {
+        @media (max-width: 500px) {
             .btn-container { flex-direction: column; }
-            .result-card { padding: 15px; }
-            .rank-circle { width: 35px; height: 35px; font-size: 1rem; margin-right: 12px; }
+            .header { padding: 35px 20px; }
         }
     </style>
 </head>
 <body>
 
-<div class="container" id="capture-area">
+<div class="container" id="report-content">
     <div class="header">
+        <p>HASIL ANALISIS MOORA</p>
         <h2>Rekomendasi Program Studi</h2>
-        <p>Halo <strong>{{ user.nama }}</strong>, ini adalah pilihan terbaik untukmu!</p>
+        <p>Halo <strong>{{ user.nama }}</strong>, temukan masa depanmu di sini!</p>
     </div>
 
     <div class="content">
@@ -192,9 +205,9 @@
                 <p>{{ h.deskripsi[:95] }}...</p>
                 
                 {% if loop.index == 1 %}
-                    <span class="status-badge bg-baik"><i class="fas fa-trophy"></i> Terbaik</span>
+                    <span class="status-badge bg-baik">Pilihan Terbaik</span>
                 {% elif loop.index == 2 %}
-                    <span class="status-badge bg-cukup"><i class="fas fa-check"></i> Cocok</span>
+                    <span class="status-badge bg-cukup">Potensi Bagus</span>
                 {% else %}
                     <span class="status-badge bg-kurang">Alternatif</span>
                 {% endif %}
@@ -202,17 +215,17 @@
 
             <div class="score-box">
                 <strong>{{ "%.4f"|format(h.skor_akhir) }}</strong>
-                <small style="font-size: 0.7rem; color: #bbb;">SKOR</small>
+                <span class="score-label">SKOR</span>
             </div>
         </div>
         {% endfor %}
 
         <div class="btn-container">
             <a href="{{ url_for('index') }}" class="btn btn-home">
-                <i class="fas fa-home"></i> Beranda
+                <i class="fas fa-undo"></i> Ulangi
             </a>
             <button onclick="downloadPDF()" class="btn btn-simpan">
-                <i class="fas fa-file-pdf"></i> Simpan PDF
+                <i class="fas fa-file-pdf"></i> Download PDF
             </button>
         </div>
     </div>
@@ -220,34 +233,42 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
     async function downloadPDF() {
         const { jsPDF } = window.jspdf;
-        const element = document.querySelector("#capture-area"); 
-        const btnContainer = document.querySelector(".btn-container");
+        const element = document.querySelector("#report-content"); 
+        const btnArea = document.querySelector(".btn-container");
         
-        // Sembunyikan tombol saat proses capture
-        btnContainer.style.visibility = "hidden";
+        // 1. Sembunyikan tombol sebelum capture
+        btnArea.style.display = "none";
 
-        // PENINGKATAN RESOLUSI: scale 3 atau 4 membuat hasil HD
+        // 2. Capture dengan High Scale (3x) untuk hasil Tajam
         const canvas = await html2canvas(element, { 
             scale: 3, 
             useCORS: true,
-            backgroundColor: "#ffffff",
-            logging: false
+            backgroundColor: "#f4f7f6",
+            logging: false,
+            // Perbaikan render teks putih di header
+            onclone: (documentClone) => {
+                const header = documentClone.querySelector(".header");
+                header.style.background = "linear-gradient(135deg, #1e7e34 0%, #1565c0 100%)";
+            }
         });
 
-        const imageData = canvas.toDataURL('image/jpeg', 1.0);
+        // 3. Gunakan PNG (Tanpa kompresi buram seperti JPEG)
+        const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
         
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
         
-        pdf.addImage(imageData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save('Rekomendasi_Prodi_{{ user.nama }}.pdf');
+        // 4. Tambahkan ke PDF dengan kualitas maksimal
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'NONE');
+        pdf.save('Hasil_Prodi_{{ user.nama }}.pdf');
 
-        // Munculkan kembali tombol
-        btnContainer.style.visibility = "visible";
+        // 5. Kembalikan tombol
+        btnArea.style.display = "flex";
     }
 </script>
 
