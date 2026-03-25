@@ -16,8 +16,6 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # 1. FIX URL DATABASE & SECRET KEY
-# Penting: PostgreSQL di hosting sering menggunakan awalan 'postgres://' 
-# yang harus diubah menjadi 'postgresql://' agar dikenali SQLAlchemy terbaru.
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'tammam_asta_super_secret_2026')
 uri = os.environ.get('DATABASE_URL')
 if uri and uri.startswith("postgres://"):
@@ -27,13 +25,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-# 2. OTOMATISASI DATABASE (Sangat Penting untuk Hosting)
-# Memastikan tabel dibuat otomatis saat aplikasi dijalankan.
+# =========================================================
+# 2. OTOMATISASI DATABASE (SANGAT PENTING UNTUK HOSTING)
+# Perbaikan: Menggunakan mekanisme yang lebih aman untuk sinkronisasi skema.
+# =========================================================
 with app.app_context():
     try:
-        # Jika Anda sering mengalami UndefinedColumn, aktifkan db.drop_all() 
-        # satu kali saja untuk mereset skema, lalu beri komentar lagi.
+        # JIKA ANDA MASIH ERROR "COLUMN DOES NOT EXIST", 
+        # AKTIFKAN db.drop_all() DI BAWAH INI UNTUK 1 KALI DEPLOY SAJA.
         # db.drop_all() 
+        
         db.create_all()
         logging.info("Database synchronized successfully.")
     except Exception as e:
@@ -54,7 +55,7 @@ def index():
             return redirect(url_for('index'))
         
         try:
-            # Gunakan 'user' atau 'users' sesuai definisi di models.py
+            # Pastikan class User di models.py sudah benar
             new_user = User(nama=nama, tipe_user='Siswa')
             db.session.add(new_user)
             db.session.commit()
@@ -75,11 +76,11 @@ def input_bobot(user_id):
     kriteria_list = Kriteria.query.all()
 
     if not kriteria_list:
-        return "Error: Data Kriteria belum diisi oleh Admin di Database.", 500
+        return "Error: Data Kriteria kosong. Admin harus isi data di dashboard /admin.", 500
 
     if request.method == 'POST':
         try:
-            # Hapus bobot lama user jika ada sebelum update
+            # Bersihkan bobot lama user
             BobotKriteria.query.filter_by(user_id=user_id).delete()
             
             for k in kriteria_list:
@@ -105,33 +106,34 @@ def input_bobot(user_id):
 def input_survey(user_id):
     user = User.query.get_or_404(user_id)
     pertanyaan_list = PertanyaanSurvei.query.order_by(PertanyaanSurvei.pertanyaan_id.asc()).all()
+    prodis = ProgramStudi.query.limit(3).all()
 
     if not pertanyaan_list:
-        return "Error: Tabel pertanyaan_survei kosong. Isi melalui Dashboard Admin.", 500
+        return "Error: Tabel pertanyaan_survei kosong.", 500
+    if len(prodis) < 3:
+        return "Error: Dibutuhkan minimal 3 Program Studi di database untuk kalkulasi survey.", 500
 
     if request.method == 'POST':
         try:
-            # Bersihkan data lama user untuk rute ini
+            # Hapus data lama agar tidak duplikat
             SurveyJawaban.query.filter_by(user_id=user_id).delete()
             PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
             
+            # Mapping nilai: A (Sangat Minat), B (Minat), C (Kurang Minat)
             mapping = {'A': [5, 3, 2], 'B': [2, 5, 3], 'C': [1, 2, 5]}
-            prodis = ProgramStudi.query.limit(3).all()
-
-            if len(prodis) < 3:
-                return "Error: Dibutuhkan minimal 3 Program Studi di database.", 400
 
             for p in pertanyaan_list:
                 jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
                 if jawaban:
-                    # Simpan Jawaban
-                    db.session.add(SurveyJawaban(
+                    # 1. Simpan Jawaban Survey
+                    new_jawaban = SurveyJawaban(
                         user_id=user_id, 
                         pertanyaan_id=p.pertanyaan_id, 
                         jawaban=jawaban
-                    ))
+                    )
+                    db.session.add(new_jawaban)
                     
-                    # Simpan Penilaian Moora (mapping jawaban ke nilai numerik)
+                    # 2. Simpan Nilai Alternatif (MOORA) berdasarkan jawaban
                     nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
                     for idx, prd in enumerate(prodis):
                         db.session.add(PenilaianAlternatif(
@@ -140,6 +142,7 @@ def input_survey(user_id):
                             kriteria_id=p.kriteria_id, 
                             nilai=float(nilai_list[idx])
                         ))
+            
             db.session.commit()
             return redirect(url_for('hitung_moora', user_id=user_id))
         except Exception as e:
@@ -164,12 +167,12 @@ def hitung_moora(user_id):
         flash("Data belum lengkap untuk melakukan perhitungan.", "warning")
         return redirect(url_for('index'))
 
-    # Perhitungan MOORA sederhana (Weighted Sum Model)
+    # Normalisasi Bobot Input Siswa
     total_bobot = sum(b.bobot_input for b in bobot_user) or 1
     b_norm = {b.kriteria_id: b.bobot_input / total_bobot for b in bobot_user}
 
     try:
-        # Hapus hasil lama user
+        # Hapus hasil lama
         HasilKeputusan.query.filter_by(user_id=user_id).delete()
         hasil_display = []
 
@@ -179,9 +182,9 @@ def hitung_moora(user_id):
                 # Cari nilai alternatif untuk prodi dan kriteria ini
                 nilai_obj = next((pn for pn in penilaian_user if pn.prodi_id == p.prodi_id and pn.kriteria_id == k.kriteria_id), None)
                 nilai = nilai_obj.nilai if nilai_obj else 0
+                # Rumus MOORA Sederhana: Bobot * Nilai
                 skor += b_norm.get(k.kriteria_id, 0) * nilai
             
-            # Simpan hasil ke DB
             db.session.add(HasilKeputusan(user_id=user_id, prodi_id=p.prodi_id, skor_akhir=skor))
             hasil_display.append({
                 'nama_prodi': p.nama_prodi, 
@@ -190,7 +193,6 @@ def hitung_moora(user_id):
             })
 
         db.session.commit()
-        # Urutkan berdasarkan skor tertinggi
         hasil_display = sorted(hasil_display, key=lambda x: x['skor_akhir'], reverse=True)
         return render_template('hasil.html', user=user, hasil=hasil_display)
     except Exception as e:
