@@ -10,189 +10,127 @@
         :root {
             --primary: #28a745;
             --secondary: #2196F3;
-            --text-dark: #343a40;
-            --bg-body: #e9ecef;
+            --text-dark: #333;
+            --bg: #f4f7f6;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-body);
-            color: #495057;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: clamp(10px, 3vw, 30px);
-        }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); padding: clamp(10px, 3vw, 30px); display: flex; justify-content: center; }
 
         .container {
-            max-width: 900px;
+            max-width: 700px; /* Diperkecil agar lebih compact */
             width: 100%;
-            background: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             overflow: hidden;
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .header {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            padding: clamp(20px, 5vw, 40px);
+            padding: 25px;
             text-align: center;
         }
 
-        .header h2 {
-            font-size: clamp(1.4em, 4vw, 2em);
-            margin-bottom: 5px;
-        }
+        .header h2 { font-size: 1.5rem; margin-bottom: 5px; }
+        .header p { font-size: 0.9rem; opacity: 0.9; }
 
-        .content { padding: clamp(15px, 4vw, 30px); }
+        .content { padding: 20px; }
 
-        /* TABEL RESPONSIF */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto; /* Penting untuk mobile */
-            -webkit-overflow-scrolling: touch;
-            margin-top: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 500px; /* Mencegah kolom terlalu sempit */
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            color: var(--text-dark);
-            text-transform: uppercase;
-            font-size: 0.85em;
-            font-weight: 700;
-        }
-
-        .prodi-info strong {
-            display: block;
-            color: var(--text-dark);
-            font-size: 1.05em;
-        }
-
-        .prodi-info small { color: #6c757d; font-size: 0.85em; }
-
-        /* STATUS BADGE */
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-size: 0.8em;
-            font-weight: 700;
-            color: #fff;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .status-baik { background-color: var(--primary); box-shadow: 0 0 10px rgba(40,167,69,0.3); }
-        .status-cukup { background-color: #ffc107; color: #333; }
-        .status-kurang { background-color: #6c757d; }
-
-        /* BUTTONS RESPONSIF */
-        .btn-container {
+        /* UI Ringkas: List Card Style alih-alih Tabel Lebar */
+        .result-item {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
             gap: 15px;
-            margin-top: 30px;
+        }
+
+        .rank-circle {
+            width: 40px; height: 40px;
+            background: var(--bg);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: var(--text-dark);
+            flex-shrink: 0;
+        }
+
+        .prodi-info { flex-grow: 1; }
+        .prodi-info h3 { font-size: 1rem; color: var(--text-dark); }
+        .prodi-info p { font-size: 0.8rem; color: #777; margin-top: 2px; }
+
+        .score-badge {
+            text-align: right;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .status-tag {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: white;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .tag-best { background: var(--primary); }
+        .tag-good { background: var(--secondary); }
+        .tag-other { background: #999; }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 25px;
         }
 
         .btn {
-            flex: 1; /* Tombol melebar di HP */
-            min-width: 200px;
-            padding: 14px 25px;
-            border-radius: 10px;
-            color: white;
-            font-weight: 600;
-            text-decoration: none;
-            text-align: center;
-            transition: 0.3s;
-            border: none;
-            cursor: pointer;
-            font-size: 1em;
+            padding: 12px; border-radius: 8px; border: none;
+            font-weight: 600; cursor: pointer; text-decoration: none;
+            text-align: center; font-size: 0.9rem; transition: 0.3s;
         }
+        .btn-home { background: #eee; color: #555; }
+        .btn-pdf { background: var(--primary); color: white; }
+        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
 
-        .btn-home { background-color: var(--primary); }
-        .btn-simpan { background-color: #dc3545; } /* Merah untuk PDF */
-
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
-
-        @media (max-width: 600px) {
-            .btn-container { flex-direction: column; }
-            .btn { width: 100%; }
+        @media (max-width: 500px) {
+            .btn-group { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<div class="container" id="capture-area">
+<div class="container" id="report-card">
     <div class="header">
-        <h2>Rekomendasi Program Studi</h2>
-        <p>Halo <strong>{{ user.nama }}</strong>, ini adalah hasil analisis kami.</p>
+        <h2>Rekomendasi Pilihanmu</h2>
+        <p>Nama: <strong>{{ user.nama }}</strong></p>
     </div>
 
     <div class="content">
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Peringkat</th>
-                        <th>Program Studi</th>
-                        <th>Skor</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for h in hasil %}
-                    <tr>
-                        <td style="font-weight: 700; text-align: center;">#{{ loop.index }}</td>
-                        <td class="prodi-info">
-                            <strong>{{ h.nama_prodi }}</strong>
-                            <small>{{ h.deskripsi }}</small>
-                        </td>
-                        <td><strong>{{ "%.4f"|format(h.skor_akhir) }}</strong></td>
-                        <td>
-                            {% if loop.index == 1 %}
-                                <span class="status-badge status-baik"><i class="fas fa-star"></i> Terbaik</span>
-                            {% elif loop.index == 2 %}
-                                <span class="status-badge status-cukup"><i class="fas fa-check"></i> Cocok</span>
-                            {% else %}
-                                <span class="status-badge status-kurang"><i class="fas fa-info-circle"></i> Alternatif</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        {% for h in hasil %}
+        <div class="result-item">
+            <div class="rank-circle">{{ loop.index }}</div>
+            <div class="prodi-info">
+                <h3>{{ h.nama_prodi }}</h3>
+                {% if loop.index == 1 %}
+                <span class="status-tag tag-best">Pilihan Utama</span>
+                {% elif loop.index == 2 %}
+                <span class="status-tag tag-good">Opsi Kedua</span>
+                {% endif %}
+                <p>{{ h.deskripsi[:80] }}...</p>
+            </div>
+            <div class="score-badge">
+                {{ "%.4f"|format(h.skor_akhir) }}
+            </div>
         </div>
+        {% endfor %}
 
-        <div class="btn-container">
-            <a href="{{ url_for('index') }}" class="btn btn-home">
-                <i class="fas fa-home"></i> Kembali ke Beranda
-            </a>
-            <button onclick="downloadPDF()" class="btn btn-simpan">
-                <i class="fas fa-file-pdf"></i> Download PDF
+        <div class="btn-group">
+            <a href="{{ url_for('index') }}" class="btn btn-home">Kembali</a>
+            <button onclick="downloadPDF()" class="btn btn-pdf">
+                <i class="fas fa-download"></i> Simpan PDF
             </button>
         </div>
     </div>
@@ -200,28 +138,35 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
     async function downloadPDF() {
         const { jsPDF } = window.jspdf;
-        // Gunakan elemen container untuk di-capture
-        const element = document.querySelector("#capture-area"); 
-        
-        // Sembunyikan tombol sebelum download
-        const btnContainer = document.querySelector(".btn-container");
-        btnContainer.style.display = "none";
+        const element = document.getElementById("report-card");
+        const btnGroup = document.querySelector(".btn-group");
 
-        const canvas = await html2canvas(element, { scale: 2 });
-        const imageData = canvas.toDataURL('image/png');
-        
+        // 1. Sembunyikan tombol agar tidak ikut terdownload
+        btnGroup.style.display = "none";
+
+        // 2. Gunakan Scale Tinggi (3 atau 4) untuk mempertajam gambar
+        const canvas = await html2canvas(element, {
+            scale: 3, // Semakin tinggi semakin tajam (High Definition)
+            useCORS: true,
+            logging: false,
+            backgroundColor: "#ffffff"
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 1.0); // Kualitas 100%
         const pdf = new jsPDF('p', 'mm', 'a4');
+        
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        
-        pdf.addImage(imageData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save('Hasil_Prodi_{{ user.nama }}.pdf');
 
-        // Munculkan kembali tombol
-        btnContainer.style.display = "flex";
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+        pdf.save(`Hasil_Prodi_${ "{{ user.nama }}" }.pdf`);
+
+        // 3. Munculkan kembali tombol
+        btnGroup.style.display = "grid";
     }
 </script>
 
