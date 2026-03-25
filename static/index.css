@@ -11,7 +11,7 @@
     --white: #ffffff;
     --shadow-light: rgba(0, 0, 0, 0.08);
     --shadow-medium: rgba(0, 0, 0, 0.15);
-    --border-radius: 12px;
+    --border-radius: 10px;
 }
 
 * {
@@ -24,30 +24,34 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--bg-light);
     color: var(--text-dark);
-    line-height: 1.6;
+    line-height: 1.7;
+    scroll-behavior: smooth;
     overflow-x: hidden;
 }
 
-/* Layout */
 .container {
-    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 25px;
 }
 
 .section-padding {
-    padding: 80px 0;
+    padding: 90px 0;
 }
 
-/* Navbar Responsif */
+.text-center {
+    text-align: center;
+}
+
+/* NAVBAR & RESPONSIVE MENU */
 .navbar {
-    background-color: var(--white);
-    padding: 15px 0;
-    box-shadow: 0 2px 10px var(--shadow-light);
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 18px 0;
+    box-shadow: 0 4px 15px var(--shadow-light);
     position: sticky;
     top: 0;
     z-index: 1000;
+    transition: all 0.3s ease;
 }
 
 .navbar .container {
@@ -57,30 +61,45 @@ body {
 }
 
 .logo {
-    font-size: 1.8rem;
+    font-size: 2em;
     font-weight: 800;
     color: var(--primary);
     text-decoration: none;
 }
 
 .nav-links {
-    display: flex;
     list-style: none;
-    gap: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-links li {
+    margin-left: 35px;
 }
 
 .nav-links a {
+    color: var(--text-light);
     text-decoration: none;
-    color: var(--text-dark);
     font-weight: 600;
-    transition: 0.3s;
+    position: relative;
+    transition: color 0.3s ease;
 }
 
-.nav-links a:hover {
-    color: var(--primary);
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0;
+    height: 3px;
+    background-color: var(--primary);
+    transition: width 0.3s ease;
 }
 
-/* Hamburger Menu (Mobile Only) */
+.nav-links a:hover { color: var(--primary); }
+.nav-links a:hover::after { width: 100%; }
+
+/* Hamburger Menu Icon */
 .menu-toggle {
     display: none;
     flex-direction: column;
@@ -89,110 +108,150 @@ body {
 }
 
 .menu-toggle span {
-    width: 25px;
+    display: block;
+    width: 28px;
     height: 3px;
-    background: var(--text-dark);
-    border-radius: 2px;
+    background: var(--primary);
+    border-radius: 3px;
 }
 
-/* Hero Section */
+/* HERO SECTION */
 .hero {
-    min-height: 80vh;
     background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 100vh;
     text-align: center;
-    color: var(--white);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
     padding: 40px 20px;
 }
 
 .hero h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    margin-bottom: 20px;
+    font-size: clamp(2.5em, 8vw, 4em); /* Responsive font size */
+    margin-bottom: 18px;
+    font-weight: 800;
 }
 
 .hero p {
-    font-size: clamp(1rem, 2vw, 1.25rem);
-    max-width: 800px;
-    margin: 0 auto 30px;
+    font-size: clamp(1em, 4vw, 1.3em);
+    margin-bottom: 35px;
+    opacity: 0.9;
 }
 
-/* Buttons */
 .cta-button {
-    background-color: var(--accent);
-    color: var(--text-dark);
-    padding: 15px 35px;
+    display: inline-block;
+    padding: 16px 35px;
+    font-size: 1.2em;
+    color: var(--white);
+    background: linear-gradient(45deg, var(--accent), #f7e099);
     border-radius: 50px;
     text-decoration: none;
     font-weight: 700;
-    display: inline-block;
-    border: none;
-    transition: 0.3s;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
 }
 
 .cta-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transform: translateY(-5px);
+    background: linear-gradient(45deg, #99f7aa, var(--accent));
 }
 
-/* Features & Team Grid */
-.feature-grid {
+/* GRID SYSTEM (Features & Team) */
+.section-heading {
+    font-size: 3em;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.feature-grid, .steps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
-    margin-top: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
 }
 
-.feature-item {
-    background: var(--white);
+.feature-item, .step-item {
+    background-color: var(--white);
     padding: 30px;
     border-radius: var(--border-radius);
-    box-shadow: 0 5px 15px var(--shadow-light);
-    transition: 0.3s;
+    box-shadow: 0 8px 25px var(--shadow-light);
+    transition: all 0.3s ease;
 }
 
 .feature-item i {
-    font-size: 3rem;
+    font-size: 3.5em;
     color: var(--primary);
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
-/* Animasi */
+.step-item .step-number {
+    width: 60px;
+    height: 60px;
+    font-size: 2.5em;
+    font-weight: 800;
+    color: var(--secondary);
+    border: 4px solid var(--secondary);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+}
+
+/* FOOTER */
+.footer {
+    background-color: var(--text-dark);
+    color: var(--white);
+    padding: 40px 0;
+}
+
+/* ANIMATIONS */
 .animated {
-    animation: fadeInUp 0.8s ease forwards;
+    animation: fadeInUp 1s ease-out forwards;
 }
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- MEDIA QUERIES (BREAKPOINTS) --- */
+/* --- RESPONSIVE MEDIA QUERIES --- */
+@media (max-width: 992px) {
+    .section-heading { font-size: 2.5em; }
+}
 
 @media (max-width: 768px) {
-    .menu-toggle {
-        display: flex;
-    }
-
+    .menu-toggle { display: flex; }
+    
     .nav-links {
-        display: none; /* Sembunyikan menu di mobile */
+        display: none; /* Hidden by default on mobile */
         flex-direction: column;
         position: absolute;
         top: 100%;
         left: 0;
         width: 100%;
         background: var(--white);
-        padding: 20px;
-        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        padding: 20px 0;
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+
+    .nav-links.active { display: flex; } /* Show when toggled */
+
+    .nav-links li {
+        margin: 15px 0;
         text-align: center;
+        width: 100%;
     }
 
-    .nav-links.active {
-        display: flex; /* Munculkan saat klik hamburger */
-    }
-
-    .section-padding {
-        padding: 50px 0;
-    }
+    .section-padding { padding: 60px 0; }
+    .hero { min-height: auto; padding: 100px 0; }
 }

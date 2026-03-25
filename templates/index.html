@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <title>Selamat Datang - ProdiKu SPK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
 
@@ -24,7 +22,7 @@
                 <span></span>
             </div>
 
-            <ul class="nav-links">
+            <ul class="nav-links" id="nav-list">
                 <li><a href="#hero">Beranda</a></li>
                 <li><a href="#features">Mengapa Kami?</a></li>
                 <li><a href="#how-it-works">Cara Kerja</a></li>
@@ -36,10 +34,7 @@
     <section id="hero" class="hero">
         <div class="hero-content animated">
             <h1>Temukan Program Studi Impianmu</h1>
-            <p>
-                Sistem Pendukung Keputusan pemilihan program studi menggunakan metode <strong>MOORA</strong>. 
-                Kami membantu Anda menganalisis minat dan preferensi untuk hasil yang objektif dan personal.
-            </p>
+            <p>Sistem Pendukung Keputusan pemilihan program studi menggunakan metode <strong>MOORA</strong>. Kami membantu Anda menganalisis minat dan preferensi.</p>
             <form action="{{ url_for('mulai_survei') }}" method="POST">
                 <button type="submit" class="cta-button">
                     <i class="fas fa-arrow-right"></i> Mulai Survei Sekarang
@@ -55,45 +50,22 @@
                 <div class="feature-item">
                     <i class="fas fa-lightbulb"></i>
                     <h3>Rekomendasi Akurat</h3>
-                    <p>Dapatkan saran program studi yang disesuaikan secara presisi dengan karakteristik unik Anda.</p>
+                    <p>Dapatkan saran program studi yang disesuaikan secara presisi.</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-poll"></i>
                     <h3>Survei Interaktif</h3>
-                    <p>Proses pengisian survei yang mudah dan cepat, dirancang untuk kenyamanan pengguna.</p>
+                    <p>Proses pengisian survei yang mudah dan cepat.</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-brain"></i>
                     <h3>Metode MOORA</h3>
-                    <p>Perhitungan berbasis optimasi multi-objektif untuk menghasilkan peringkat prodi terbaik.</p>
+                    <p>Perhitungan optimasi multi-objektif untuk hasil terbaik.</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-chart-line"></i>
                     <h3>Pilihan Karir</h3>
-                    <p>Membantu membuka jalan menuju masa depan karir yang sesuai dengan kompetensi diri.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="how-it-works" class="how-it-works section-padding text-center">
-        <div class="container">
-            <h2 class="section-heading">Bagaimana ProdiKu Bekerja?</h2>
-            <div class="steps-grid">
-                <div class="step-item">
-                    <span class="step-number">1</span>
-                    <h3>Input Bobot</h3>
-                    <p>Tentukan prioritas kriteria Anda (biaya, prospek, dll) untuk mempersonalisasi hasil.</p>
-                </div>
-                <div class="step-item">
-                    <span class="step-number">2</span>
-                    <h3>Isi Survei Minat</h3>
-                    <p>Jawab beberapa pertanyaan singkat mengenai minat dan preferensi belajar Anda.</p>
-                </div>
-                <div class="step-item">
-                    <span class="step-number">3</span>
-                    <h3>Hasil Rekomendasi</h3>
-                    <p>Sistem akan menampilkan daftar prodi PNJ yang paling cocok untuk Anda ambil.</p>
+                    <p>Membantu membuka jalan menuju masa depan cerah.</p>
                 </div>
             </div>
         </div>
@@ -105,72 +77,59 @@
             <div class="feature-grid">
                 <div class="feature-item">
                     <i class="fas fa-user-circle"></i>
-                    <h3>Azriel Kamal</h3>
-                    <p>Anggota Kelompok</p>
+                    <h3>AZRIEL KAMAL</h3>
+                    <p>Mahasiswa PNJ</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-user-circle"></i>
-                    <h3>Tammam Tanjung</h3>
-                    <p>Anggota Kelompok</p>
+                    <h3>TAMMAM TANJUNG</h3>
+                    <p>Mahasiswa PNJ</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-user-circle"></i>
-                    <h3>Raflyalif Adzani</h3>
-                    <p>Anggota Kelompok</p>
+                    <h3>RAFLYALIF ADZANI</h3>
+                    <p>Mahasiswa PNJ</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-user-circle"></i>
-                    <h3>Safina Qaida</h3>
-                    <p>Anggota Kelompok</p>
+                    <h3>SAFINA QAIDA</h3>
+                    <p>Mahasiswi PNJ</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer class="footer" style="background-color: var(--text-dark); color: white; padding: 50px 0; text-align: center;">
+    <footer class="footer text-center">
         <div class="container">
-            <p style="margin-bottom: 10px;">Dibuat dengan <i class="fas fa-heart" style="color: #28a745;"></i> oleh <strong>Tim ASTA</strong></p>
-            <p>&copy; 2026 ProdiKu. Politeknik Negeri Jakarta. | <a href="/admin" style="color: var(--primary); text-decoration: none;">Login Admin</a></p>
+            <p>Dibuat dengan <i class="fas fa-heart" style="color: #28a745;"></i> oleh <strong>Tim ASTA</strong></p>
+            <p>&copy; 2026 ProdiKu. PNJ. | <a href="/admin">Login Admin</a></p>
         </div>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            
-            // 1. Tombol Toggle Menu Mobile
+            // Logic Hamburger Menu
             const menuToggle = document.getElementById('mobile-menu');
-            const navLinks = document.querySelector('.nav-links');
+            const navLinks = document.getElementById('nav-list');
 
-            if (menuToggle) {
-                menuToggle.addEventListener('click', function() {
-                    navLinks.classList.toggle('active');
-                });
-            }
-
-            // 2. Klik link menu otomatis menutup menu (khusus Mobile)
-            document.querySelectorAll('.nav-links a').forEach(link => {
-                link.addEventListener('click', () => {
-                    navLinks.classList.remove('active');
-                });
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
             });
 
-            // 3. Intersection Observer untuk animasi saat di-scroll
-            const observerOptions = { 
-                threshold: 0.15,
-                rootMargin: '0px 0px -50px 0px'
-            };
+            // Tutup menu saat link diklik (mobile)
+            document.querySelectorAll('.nav-links a').forEach(n => n.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            }));
 
+            // Animasi Scroll
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('animated');
-                        // Berhenti mengamati setelah animasi jalan
-                        observer.unobserve(entry.target); 
                     }
                 });
-            }, observerOptions);
+            }, { threshold: 0.1 });
 
-            // Target elemen yang ingin dianimasikan
             document.querySelectorAll('.section-heading, .feature-item, .step-item').forEach((el) => {
                 observer.observe(el);
             });
