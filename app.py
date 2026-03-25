@@ -66,11 +66,19 @@ def input_bobot(user_id):
     kriteria_list = Kriteria.query.all()
 
     if not kriteria_list:
-        return "Data Kriteria kosong. Admin harus mengisi data di /admin.", 500
+        return "Error: Data Kriteria masih kosong.", 500
 
     if request.method == 'POST':
         try:
+            # --- BAGIAN PERBAIKAN NAMA ---
+            nama_input = request.form.get('nama', '').strip()
+            if nama_input:
+                user.nama = nama_input  # Update nama "Pengguna Baru" menjadi nama asli
+            # -----------------------------
+
+            # Hapus data bobot lama jika ada
             BobotKriteria.query.filter_by(user_id=user_id).delete()
+            
             for k in kriteria_list:
                 val = request.form.get(f'bobot_{k.kriteria_id}', 0)
                 db.session.add(BobotKriteria(
@@ -78,11 +86,13 @@ def input_bobot(user_id):
                     kriteria_id=k.kriteria_id, 
                     bobot_input=float(val)
                 ))
-            db.session.commit()
+            
+            db.session.commit() # Nama dan Bobot tersimpan permanen
             return redirect(url_for('input_survey', user_id=user_id))
         except Exception as e:
             db.session.rollback()
-            return f"Error Simpan Bobot: {e}", 500
+            logging.error(f"Error Simpan Bobot: {e}")
+            return f"Error: {e}", 500
 
     return render_template('input_bobot.html', kriteria=kriteria_list, user=user)
 
