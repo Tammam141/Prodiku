@@ -30,16 +30,13 @@ db.init_app(app)
 # =========================================================
 with app.app_context():
     try:
-        # PENTING: Jika Anda masih melihat error "column does not exist",
-        # buka komentar 'db.drop_all()' di bawah ini, push, jalankan web sekali,
-        # lalu beri komentar kembali.
-        
-        # db.drop_all() 
+        # HAPUS SEMUA TABEL LAMA
+        db.drop_all() 
+        # BUAT ULANG SEMUA TABEL DENGAN SKEMA TERBARU
         db.create_all()
-        logging.info("Database schema synchronized successfully.")
+        logging.info("Database Berhasil Direset ke Skema Terbaru.")
     except Exception as e:
-        logging.error(f"Database Initialization Error: {e}")
-
+        logging.error(f"Database Init Error: {e}")
 # Registrasi Blueprint Admin
 app.register_blueprint(admin_bp, url_prefix='/admin')
 
