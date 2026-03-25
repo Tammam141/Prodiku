@@ -2,216 +2,198 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Hasil Rekomendasi Program Studi</title>
+    <title>Hasil Rekomendasi - ProdiKu</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* CSS yang sudah ada sebelumnya... */
+        :root {
+            --primary: #28a745;
+            --secondary: #2196F3;
+            --text-dark: #343a40;
+            --bg-body: #e9ecef;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #e9ecef;
+            background-color: var(--bg-body);
             color: #495057;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            padding: 30px;
+            padding: clamp(10px, 3vw, 30px);
         }
 
         .container {
             max-width: 900px;
             width: 100%;
-            margin: auto;
             background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .header {
-            background: linear-gradient(90deg, #28a745, #2196F3);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             color: white;
-            padding: 30px;
+            padding: clamp(20px, 5vw, 40px);
             text-align: center;
         }
 
         .header h2 {
-            margin: 0 0 5px 0;
-            font-size: 1.8em;
-            font-weight: 700;
+            font-size: clamp(1.4em, 4vw, 2em);
+            margin-bottom: 5px;
         }
 
-        .header p {
-            margin: 0;
-            opacity: 0.9;
+        .content { padding: clamp(15px, 4vw, 30px); }
+
+        /* TABEL RESPONSIF */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto; /* Penting untuk mobile */
+            -webkit-overflow-scrolling: touch;
+            margin-top: 10px;
         }
 
-        .content {
-            padding: 30px;
-        }
-        
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 500px; /* Mencegah kolom terlalu sempit */
         }
 
         th, td {
             padding: 15px;
             text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-            vertical-align: middle;
+            border-bottom: 1px solid #eee;
         }
 
         th {
-            background-color: #28a745;
-            color: white;
+            background-color: #f8f9fa;
+            color: var(--text-dark);
             text-transform: uppercase;
-            font-size: 0.9em;
-            font-weight: 600;
-        }
-        
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        td.ranking {
+            font-size: 0.85em;
             font-weight: 700;
-            font-size: 1.2em;
-            color: #343a40;
         }
 
         .prodi-info strong {
             display: block;
-            font-size: 1.1em;
-            color: #343a40;
-            margin-bottom: 3px;
+            color: var(--text-dark);
+            font-size: 1.05em;
         }
 
-        .prodi-info small {
-            color: #6c757d;
-        }
+        .prodi-info small { color: #6c757d; font-size: 0.85em; }
 
-        /* --- PERUBAHAN STYLE STATUS DIMULAI DI SINI --- */
+        /* STATUS BADGE */
         .status-badge {
-            padding: 8px 16px; /* Sedikit lebih besar */
-            border-radius: 50px; /* Bentuk pil */
-            font-size: 0.9em;
-            font-weight: 600; /* Teks lebih tebal */
-            color: #ffffff;
-            display: inline-flex; /* Agar ikon dan teks sejajar */
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            display: inline-flex;
             align-items: center;
-            gap: 8px; /* Jarak antara ikon dan teks */
-            transition: transform 0.2s ease; /* Transisi untuk hover */
-        }
-        
-        .status-badge:hover {
-            transform: translateY(-3px); /* Efek terangkat saat di-hover */
+            gap: 5px;
         }
 
-        .status-baik { 
-            background-color: #28a745;
-            /* Animasi bersinar untuk status terbaik */
-            animation: glow 1.5s infinite alternate; 
-        }
-        .status-cukup { background-color: #ffc107; color: #212529; }
-        .status-kurang { background-color: #6c757d; } /* Warna diubah jadi abu-abu */
-        
-        /* Keyframes untuk animasi 'glow' */
-        @keyframes glow {
-            from {
-                box-shadow: 0 0 5px #28a745;
-            }
-            to {
-                box-shadow: 0 0 20px #90ee90;
-            }
-        }
-        /* --- AKHIR PERUBAHAN STYLE STATUS --- */
+        .status-baik { background-color: var(--primary); box-shadow: 0 0 10px rgba(40,167,69,0.3); }
+        .status-cukup { background-color: #ffc107; color: #333; }
+        .status-kurang { background-color: #6c757d; }
 
+        /* BUTTONS RESPONSIF */
         .btn-container {
-            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
             margin-top: 30px;
         }
-        
+
         .btn {
-            display: inline-block;
-            padding: 12px 30px;
-            margin: 0 10px;
-            border: none;
-            border-radius: 8px;
+            flex: 1; /* Tombol melebar di HP */
+            min-width: 200px;
+            padding: 14px 25px;
+            border-radius: 10px;
             color: white;
             font-weight: 600;
-            cursor: pointer;
             text-decoration: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-align: center;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
             font-size: 1em;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        }
+        .btn-home { background-color: var(--primary); }
+        .btn-simpan { background-color: #dc3545; } /* Merah untuk PDF */
 
-        .btn-home {
-            background-color: #28a745;
-        }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        .btn-simpan {
-            background-color: #007bff;
+        @media (max-width: 600px) {
+            .btn-container { flex-direction: column; }
+            .btn { width: 100%; }
         }
-
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="capture-area">
     <div class="header">
-        <h2>Hasil Rekomendasi Program Studi</h2>
-        <p>Selamat, <strong>{{ user.nama }}</strong>! Berikut adalah program studi yang direkomendasikan untuk Anda.</p>
+        <h2>Rekomendasi Program Studi</h2>
+        <p>Halo <strong>{{ user.nama }}</strong>, ini adalah hasil analisis kami.</p>
     </div>
 
     <div class="content">
-        <table>
-            <thead>
-                <tr>
-                    <th>Ranking</th>
-                    <th>Program Studi</th>
-                    <th>Skor Akhir</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for h in hasil %}
-                <tr>
-                    <td class="ranking">{{ loop.index }}</td>
-                    <td class="prodi-info">
-                        <strong>{{ h.nama_prodi }}</strong>
-                        <small>{{ h.deskripsi }}</small>
-                    </td>
-                    <td><strong>{{ "%.4f"|format(h.skor_akhir) }}</strong></td>
-                    <td>
-                        {% if loop.index == 1 %}
-                            <span class="status-badge status-baik">
-                                <i class="fas fa-trophy"></i> Pilihan Terbaik
-                            </span>
-                        {% elif loop.index == 2 %}
-                            <span class="status-badge status-cukup">
-                                <i class="fas fa-thumbs-up"></i> Potensi Cocok
-                            </span>
-                        {% else %}
-                            <span class="status-badge status-kurang">
-                                <i class="fas fa-compass"></i> Perlu Tinjauan
-                            </span>
-                        {% endif %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Peringkat</th>
+                        <th>Program Studi</th>
+                        <th>Skor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in hasil %}
+                    <tr>
+                        <td style="font-weight: 700; text-align: center;">#{{ loop.index }}</td>
+                        <td class="prodi-info">
+                            <strong>{{ h.nama_prodi }}</strong>
+                            <small>{{ h.deskripsi }}</small>
                         </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        <td><strong>{{ "%.4f"|format(h.skor_akhir) }}</strong></td>
+                        <td>
+                            {% if loop.index == 1 %}
+                                <span class="status-badge status-baik"><i class="fas fa-star"></i> Terbaik</span>
+                            {% elif loop.index == 2 %}
+                                <span class="status-badge status-cukup"><i class="fas fa-check"></i> Cocok</span>
+                            {% else %}
+                                <span class="status-badge status-kurang"><i class="fas fa-info-circle"></i> Alternatif</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
         <div class="btn-container">
-            <a href="{{ url_for('index') }}" class="btn btn-home"><i class="fas fa-home me-2"></i> Kembali ke Home</a>
-            <button onclick="downloadPDF()" class="btn btn-simpan"><i class="fas fa-save me-2"></i> Simpan Hasil</button>
+            <a href="{{ url_for('index') }}" class="btn btn-home">
+                <i class="fas fa-home"></i> Kembali ke Beranda
+            </a>
+            <button onclick="downloadPDF()" class="btn btn-simpan">
+                <i class="fas fa-file-pdf"></i> Download PDF
+            </button>
         </div>
     </div>
 </div>
@@ -221,14 +203,25 @@
 <script>
     async function downloadPDF() {
         const { jsPDF } = window.jspdf;
-        const elementToPrint = document.querySelector(".container"); 
-        const canvas = await html2canvas(elementToPrint, { scale: 2 });
+        // Gunakan elemen container untuk di-capture
+        const element = document.querySelector("#capture-area"); 
+        
+        // Sembunyikan tombol sebelum download
+        const btnContainer = document.querySelector(".btn-container");
+        btnContainer.style.display = "none";
+
+        const canvas = await html2canvas(element, { scale: 2 });
         const imageData = canvas.toDataURL('image/png');
+        
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
         pdf.addImage(imageData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save('hasil-rekomendasi-prodi-{{ user.nama }}.pdf');
+        pdf.save('Hasil_Prodi_{{ user.nama }}.pdf');
+
+        // Munculkan kembali tombol
+        btnContainer.style.display = "flex";
     }
 </script>
 
