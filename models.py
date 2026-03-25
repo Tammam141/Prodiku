@@ -7,7 +7,7 @@ class User(db.Model):
     __tablename__ = 'users' 
     user_id = db.Column(db.Integer, primary_key=True)
     nama = db.Column(db.String(100), nullable=False)
-    tipe_user = db.Column(db.String(50), nullable=False)
+    tipe_user = db.Column(db.String(50), nullable=False, default='Siswa')
 
 class ProgramStudi(db.Model):
     __tablename__ = 'program_studi'
@@ -22,18 +22,17 @@ class Kriteria(db.Model):
     nama_kriteria = db.Column(db.String(100), nullable=False)
     penjelasan = db.Column(db.Text)
     
-    # Relasi tunggal yang rapi
+    # Relasi ke Pertanyaan
     pertanyaan = db.relationship('PertanyaanSurvei', 
-                                 backref='kriteria_ref', 
+                                 backref='kriteria', 
                                  lazy=True, 
-                                 cascade="all, delete-orphan",
-                                 order_by="PertanyaanSurvei.pertanyaan_id")
+                                 cascade="all, delete-orphan")
 
 class PertanyaanSurvei(db.Model):
     __tablename__ = 'pertanyaan_survei'
     pertanyaan_id = db.Column(db.Integer, primary_key=True)
-    kriteria_id = db.Column(db.Integer, db.ForeignKey('kriteria.kriteria_id'))
-    teks_pertanyaan = db.Column(db.Text) 
+    kriteria_id = db.Column(db.Integer, db.ForeignKey('kriteria.kriteria_id'), nullable=False)
+    teks_pertanyaan = db.Column(db.Text, nullable=False) 
     opsi_a = db.Column(db.Text)
     opsi_b = db.Column(db.Text)
     opsi_c = db.Column(db.Text)
@@ -71,5 +70,6 @@ class HasilKeputusan(db.Model):
     skor_akhir = db.Column(db.Float, nullable=False)
     tanggal_keputusan = db.Column(db.Date, default=date.today)
     
-    user = db.relationship('User', backref='hasil_keputusan_ref')
-    prodi = db.relationship('ProgramStudi', backref='hasil_keputusan_ref')
+    # Menghubungkan relasi untuk mempermudah pemanggilan di template (hasil.html)
+    user = db.relationship('User', backref='hasil')
+    prodi = db.relationship('ProgramStudi', backref='hasil')
