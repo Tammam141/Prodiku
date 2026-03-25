@@ -9,7 +9,7 @@ from models import (
 )
 from admin_routes import admin_bp
 
-# Setup Logging agar error muncul di Vercel/Hosting Logs
+# Setup Logging agar error muncul di Vercel Logs
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
@@ -26,19 +26,19 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 # =========================================================
-# 2. OTOMATISASI DATABASE (SANGAT PENTING UNTUK HOSTING)
-# Perbaikan: Menggunakan mekanisme yang lebih aman untuk sinkronisasi skema.
+# 2. SISTEM AUTO-SYNC DATABASE (SOLUSI ERROR UNDEFINED COLUMN)
 # =========================================================
 with app.app_context():
     try:
-        # JIKA ANDA MASIH ERROR "COLUMN DOES NOT EXIST", 
-        # AKTIFKAN db.drop_all() DI BAWAH INI UNTUK 1 KALI DEPLOY SAJA.
-        # db.drop_all() 
+        # PENTING: Jika Anda masih melihat error "column does not exist",
+        # buka komentar 'db.drop_all()' di bawah ini, push, jalankan web sekali,
+        # lalu beri komentar kembali.
         
+        # db.drop_all() 
         db.create_all()
-        logging.info("Database synchronized successfully.")
+        logging.info("Database schema synchronized successfully.")
     except Exception as e:
-        logging.error(f"Database Init Error: {e}")
+        logging.error(f"Database Initialization Error: {e}")
 
 # Registrasi Blueprint Admin
 app.register_blueprint(admin_bp, url_prefix='/admin')
@@ -55,7 +55,7 @@ def index():
             return redirect(url_for('index'))
         
         try:
-            # Pastikan class User di models.py sudah benar
+            # Menggunakan model User sesuai models.py (table: users)
             new_user = User(nama=nama, tipe_user='Siswa')
             db.session.add(new_user)
             db.session.commit()
@@ -76,11 +76,11 @@ def input_bobot(user_id):
     kriteria_list = Kriteria.query.all()
 
     if not kriteria_list:
-        return "Error: Data Kriteria kosong. Admin harus isi data di dashboard /admin.", 500
+        return "Error: Data Kriteria masih kosong. Admin harus mengisi data di /admin.", 500
 
     if request.method == 'POST':
         try:
-            # Bersihkan bobot lama user
+            # Hapus data bobot lama untuk user ini jika ada
             BobotKriteria.query.filter_by(user_id=user_id).delete()
             
             for k in kriteria_list:
@@ -100,40 +100,40 @@ def input_bobot(user_id):
     return render_template('input_bobot.html', kriteria=kriteria_list, user=user)
 
 # ======================
-# 2. INPUT SURVEY
+# 2. INPUT SURVEY & PENILAIAN MOORA
 # ======================
 @app.route('/survey/<int:user_id>', methods=['GET', 'POST'])
 def input_survey(user_id):
     user = User.query.get_or_404(user_id)
     pertanyaan_list = PertanyaanSurvei.query.order_by(PertanyaanSurvei.pertanyaan_id.asc()).all()
-    prodis = ProgramStudi.query.limit(3).all()
+    prodis = ProgramStudi.query.limit(3).all() # Mengambil 3 alternatif utama
 
     if not pertanyaan_list:
-        return "Error: Tabel pertanyaan_survei kosong.", 500
+        return "Error: Tabel pertanyaan_survei kosong di database.", 500
     if len(prodis) < 3:
-        return "Error: Dibutuhkan minimal 3 Program Studi di database untuk kalkulasi survey.", 500
+        return "Error: Minimal dibutuhkan 3 Program Studi di database untuk perhitungan.", 500
 
     if request.method == 'POST':
         try:
-            # Hapus data lama agar tidak duplikat
+            # Pembersihan data lama agar sinkron saat pengisian ulang
             SurveyJawaban.query.filter_by(user_id=user_id).delete()
             PenilaianAlternatif.query.filter_by(user_id=user_id).delete()
             
-            # Mapping nilai: A (Sangat Minat), B (Minat), C (Kurang Minat)
+            # Mapping Nilai MOORA: A=Sangat Minat(5), B=Minat(3), C=Kurang(1)
+            # Anda bisa menyesuaikan angka ini sesuai kebutuhan bobot internal
             mapping = {'A': [5, 3, 2], 'B': [2, 5, 3], 'C': [1, 2, 5]}
 
             for p in pertanyaan_list:
                 jawaban = request.form.get(f'jawaban[{p.pertanyaan_id}]')
                 if jawaban:
-                    # 1. Simpan Jawaban Survey
-                    new_jawaban = SurveyJawaban(
+                    # Simpan Jawaban Mentah
+                    db.session.add(SurveyJawaban(
                         user_id=user_id, 
                         pertanyaan_id=p.pertanyaan_id, 
                         jawaban=jawaban
-                    )
-                    db.session.add(new_jawaban)
+                    ))
                     
-                    # 2. Simpan Nilai Alternatif (MOORA) berdasarkan jawaban
+                    # Simpan Nilai ke Tabel Penilaian Alternatif untuk MOORA
                     nilai_list = mapping.get(jawaban.upper(), [0, 0, 0])
                     for idx, prd in enumerate(prodis):
                         db.session.add(PenilaianAlternatif(
@@ -164,40 +164,44 @@ def hitung_moora(user_id):
     penilaian_user = PenilaianAlternatif.query.filter_by(user_id=user_id).all()
 
     if not bobot_user or not penilaian_user:
-        flash("Data belum lengkap untuk melakukan perhitungan.", "warning")
+        flash("Data tidak ditemukan. Harap isi survey kembali.", "warning")
         return redirect(url_for('index'))
 
-    # Normalisasi Bobot Input Siswa
-    total_bobot = sum(b.bobot_input for b in bobot_user) or 1
-    b_norm = {b.kriteria_id: b.bobot_input / total_bobot for b in bobot_user}
+    # Normalisasi Bobot Input
+    total_bobot_val = sum(b.bobot_input for b in bobot_user) or 1
+    b_norm = {b.kriteria_id: b.bobot_input / total_bobot_val for b in bobot_user}
 
     try:
-        # Hapus hasil lama
+        # Reset hasil lama
         HasilKeputusan.query.filter_by(user_id=user_id).delete()
         hasil_display = []
 
         for p in prodi_list:
-            skor = 0
+            skor_akhir = 0
             for k in kriteria_list:
-                # Cari nilai alternatif untuk prodi dan kriteria ini
+                # Ambil nilai alternatif yang sudah di-mapping dari survey
                 nilai_obj = next((pn for pn in penilaian_user if pn.prodi_id == p.prodi_id and pn.kriteria_id == k.kriteria_id), None)
-                nilai = nilai_obj.nilai if nilai_obj else 0
-                # Rumus MOORA Sederhana: Bobot * Nilai
-                skor += b_norm.get(k.kriteria_id, 0) * nilai
+                nilai_val = nilai_obj.nilai if nilai_obj else 0
+                
+                # Perhitungan Skor: Bobot Normalisasi * Nilai Alternatif
+                skor_akhir += b_norm.get(k.kriteria_id, 0) * nilai_val
             
-            db.session.add(HasilKeputusan(user_id=user_id, prodi_id=p.prodi_id, skor_akhir=skor))
+            # Simpan hasil ke database
+            db.session.add(HasilKeputusan(user_id=user_id, prodi_id=p.prodi_id, skor_akhir=skor_akhir))
+            
             hasil_display.append({
                 'nama_prodi': p.nama_prodi, 
-                'skor_akhir': round(skor, 4), 
+                'skor_akhir': round(skor_akhir, 4), 
                 'deskripsi': p.deskripsi or "Belum ada deskripsi."
             })
 
         db.session.commit()
+        # Sorting dari nilai tertinggi
         hasil_display = sorted(hasil_display, key=lambda x: x['skor_akhir'], reverse=True)
         return render_template('hasil.html', user=user, hasil=hasil_display)
     except Exception as e:
         db.session.rollback()
-        logging.error(f"Error Moora: {e}")
+        logging.error(f"Error Moora Calculate: {e}")
         return f"Error Perhitungan: {e}", 500
 
 if __name__ == '__main__':
