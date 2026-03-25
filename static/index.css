@@ -1,599 +1,198 @@
-        :root {
-            --primary: #28a745; /* Modern Green */
-            --primary-hover: #218838;
-            --secondary: #007bff; /* Modern Blue */
-            --secondary-hover: #0056b3;
-            --accent: #ffc107; /* Gold/Yellow Accent */
-            --bg-light: #f8f9fa; /* Lighter background */
-            --bg-dark: #e9ecef; /* Slightly darker background */
-            --text-dark: #343a40; /* Darker text */
-            --text-light: #6c757d; /* Lighter grey text */
-            --white: #ffffff;
-            --shadow-light: rgba(0, 0, 0, 0.08);
-            --shadow-medium: rgba(0, 0, 0, 0.15);
-            --border-radius: 10px;
-        }
+:root {
+    --primary: #28a745;
+    --primary-hover: #218838;
+    --secondary: #007bff;
+    --secondary-hover: #0056b3;
+    --accent: #ffc107;
+    --bg-light: #f8f9fa;
+    --bg-dark: #e9ecef;
+    --text-dark: #343a40;
+    --text-light: #6c757d;
+    --white: #ffffff;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+    --border-radius: 12px;
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            line-height: 1.7; /* Sedikit perkecil line-height untuk kerapatan */
-            scroll-behavior: smooth;
-            overflow-x: hidden; /* Prevent horizontal scroll from animations */
-        }
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
 
-        /* Utility Classes */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 25px;
-        }
+/* Layout */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
 
-        .section-padding {
-            padding: 90px 0; /* Sedikit perkecil padding section */
-        }
+.section-padding {
+    padding: 80px 0;
+}
 
-        .text-center {
-            text-align: center;
-        }
+/* Navbar Responsif */
+.navbar {
+    background-color: var(--white);
+    padding: 15px 0;
+    box-shadow: 0 2px 10px var(--shadow-light);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
 
-        /* Header/Navigation */
-        .navbar {
-            background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
-            padding: 18px 0; /* Sedikit perkecil padding navbar */
-            box-shadow: 0 4px 15px var(--shadow-light);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .navbar.scrolled {
-            background-color: var(--white); /* Solid white on scroll */
-            box-shadow: 0 6px 20px var(--shadow-medium);
-        }
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-decoration: none;
+}
 
-        .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
 
-        .logo {
-            font-size: 2em; /* Sedikit perkecil ukuran logo */
-            font-weight: 800;
-            color: var(--primary);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
-        }
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 600;
+    transition: 0.3s;
+}
 
-        .nav-links {
-            list-style: none;
-        }
+.nav-links a:hover {
+    color: var(--primary);
+}
 
-        .nav-links li {
-            display: inline-block;
-            margin-left: 35px; /* Sedikit perkecil margin antar link */
-        }
+/* Hamburger Menu (Mobile Only) */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+}
 
-        .nav-links a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1em; /* Sedikit perkecil ukuran font navigasi */
-            position: relative;
-            transition: color 0.3s ease;
-        }
+.menu-toggle span {
+    width: 25px;
+    height: 3px;
+    background: var(--text-dark);
+    border-radius: 2px;
+}
 
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -5px;
-            width: 0;
-            height: 3px;
-            background-color: var(--primary);
-            transition: width 0.3s ease;
-            border-radius: 2px;
-        }
+/* Hero Section */
+.hero {
+    min-height: 80vh;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--white);
+    padding: 40px 20px;
+}
 
-        .nav-links a:hover {
-            color: var(--primary);
-        }
+.hero h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 20px;
+}
 
-        .nav-links a:hover::after {
-            width: 100%;
-        }
+.hero p {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    max-width: 800px;
+    margin: 0 auto 30px;
+}
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--white);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+/* Buttons */
+.cta-button {
+    background-color: var(--accent);
+    color: var(--text-dark);
+    padding: 15px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-block;
+    border: none;
+    transition: 0.3s;
+}
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('https://images.unsplash.com/photo-1581090700227-1e8b601c8b0c?auto=format&fit=crop&w=1800&q=80') no-repeat center center/cover;
-            opacity: 0.15;
-            z-index: 1;
-            animation: backgroundPan 30s linear infinite alternate;
-        }
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
 
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 900px;
-            padding: 40px 20px; /* Sedikit perkecil padding hero-content */
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 1s ease-out forwards;
-            animation-delay: 0.5s;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            box-sizing: border-box;
-        }
+/* Features & Team Grid */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
 
-        .hero h1 {
-            font-size: 4em; /* Perkecil H1 */
-            margin-bottom: 18px; /* Kurangi margin-bottom */
-            font-weight: 800;
-            letter-spacing: -1.5px; /* Sedikit perkecil letter spacing */
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-        }
+.feature-item {
+    background: var(--white);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 5px 15px var(--shadow-light);
+    transition: 0.3s;
+}
 
-        .hero p {
-            font-size: 1.3em; /* Perkecil P */
-            margin-bottom: 35px; /* Kurangi margin-bottom */
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            opacity: 0.9;
-        }
+.feature-item i {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
 
-        .cta-button {
-            display: inline-block;
-            padding: 16px 35px; /* Sedikit perkecil padding tombol */
-            font-size: 1.2em; /* Sedikit perkecil ukuran font tombol */
-            color: var(--white);
-            background: linear-gradient(45deg, var(--accent), #f7e099);
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: 700;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.5px;
-        }
+/* Animasi */
+.animated {
+    animation: fadeInUp 0.8s ease forwards;
+}
 
-        .cta-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: skewX(-30deg);
-            transition: all 0.5s ease;
-        }
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        .cta-button:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-            background: linear-gradient(45deg, #99f7aa, var(--accent));
-        }
+/* --- MEDIA QUERIES (BREAKPOINTS) --- */
 
-        .cta-button:hover::before {
-            left: 100%;
-        }
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
 
-        .cta-button i {
-            margin-right: 8px; /* Sedikit perkecil margin ikon */
-        }
+    .nav-links {
+        display: none; /* Sembunyikan menu di mobile */
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--white);
+        padding: 20px;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        text-align: center;
+    }
 
-        /* Section Headings */
-        .section-heading {
-            font-size: 3em; /* Perkecil H2 */
-            margin-bottom: 20px; /* Kurangi margin-bottom */
-            font-weight: 800;
-            color: var(--text-dark);
-            position: relative;
-            display: inline-block;
-            letter-spacing: -1px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease-out;
-        }
+    .nav-links.active {
+        display: flex; /* Munculkan saat klik hamburger */
+    }
 
-        .section-heading::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            bottom: -12px; /* Sesuaikan posisi garis bawah */
-            transform: translateX(-50%);
-            width: 90px; /* Sedikit perkecil lebar garis */
-            height: 4px; /* Sedikit perkecil tinggi garis */
-            background-color: var(--primary);
-            border-radius: 3px;
-        }
-
-        .section-heading.animated {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Features Section */
-        .features {
-            background-color: var(--bg-light);
-            padding: 90px 0; /* Konsisten dengan section-padding */
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Sesuaikan minwidth */
-            gap: 30px; /* Sedikit perkecil gap */
-            margin-top: 60px; /* Sedikit perkecil margin-top */
-        }
-
-        .feature-item {
-            background-color: var(--white);
-            padding: 30px; /* Sedikit perkecil padding item */
-            border-radius: var(--border-radius);
-            box-shadow: 0 8px 25px var(--shadow-light);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease-out;
-        }
-
-        .feature-item.animated {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .feature-item:hover {
-            transform: translateY(-10px); /* Kurangi sedikit efek hover */
-            box-shadow: 0 12px 30px var(--shadow-medium); /* Kurangi sedikit bayangan hover */
-            background-color: var(--bg-dark);
-        }
-
-        .feature-item i {
-            font-size: 3.5em; /* Perkecil ikon */
-            color: var(--primary); /* DITAMBAHKAN KEMBALI: Warna hijau */
-            margin-bottom: 20px; /* Kurangi margin-bottom */
-            transition: color 0.3s ease;
-        }
-
-        .feature-item:hover i {
-            color: var(--secondary);
-        }
-
-        .feature-item h3 {
-            font-size: 1.6em; /* Perkecil H3 */
-            margin-bottom: 12px; /* Kurangi margin-bottom */
-            color: var(--text-dark);
-            font-weight: 700;
-        }
-
-        .feature-item p {
-            color: var(--text-light);
-            font-size: 0.95em; /* Perkecil P */
-            flex-grow: 1;
-        }
-
-        /* How It Works Section */
-        .how-it-works {
-            background: linear-gradient(135deg, var(--bg-dark), var(--bg-light));
-            padding: 90px 0; /* Konsisten dengan section-padding */
-        }
-
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Sesuaikan minwidth */
-            gap: 30px; /* Sedikit perkecil gap */
-            margin-top: 60px; /* Sedikit perkecil margin-top */
-            position: relative;
-        }
-
-        /* Step Line Connector */
-        .steps-grid::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(to right, var(--secondary), var(--primary));
-            z-index: 0;
-            transform: translateY(-50%);
-            display: none;
-        }
-
-        @media (min-width: 769px) {
-            .steps-grid::before {
-                display: block;
-            }
-        }
-
-        .step-item {
-            background-color: var(--white);
-            padding: 30px; /* Sedikit perkecil padding item */
-            border-radius: var(--border-radius);
-            box-shadow: 0 8px 25px var(--shadow-light);
-            text-align: center;
-            position: relative;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            z-index: 1;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease-out;
-        }
-
-        .step-item.animated {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .step-item:hover {
-            transform: translateY(-8px); /* Kurangi sedikit efek hover */
-            box-shadow: 0 10px 25px var(--shadow-medium); /* Kurangi sedikit bayangan hover */
-        }
-
-        .step-item .step-number {
-            font-size: 2.5em; /* Perkecil nomor langkah */
-            font-weight: 800;
-            color: var(--secondary);
-            margin-bottom: 18px; /* Kurangi margin-bottom */
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px; /* Perkecil ukuran lingkaran */
-            height: 60px; /* Perkecil ukuran lingkaran */
-            background: var(--bg-light);
-            border-radius: 50%;
-            border: 4px solid var(--secondary);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .step-item:hover .step-number {
-            background: var(--secondary);
-            color: var(--white);
-            border-color: var(--white);
-            transform: scale(1.05); /* Kurangi sedikit efek scale */
-        }
-
-        .step-item h3 {
-            font-size: 1.4em; /* Perkecil H3 */
-            margin-bottom: 12px; /* Kurangi margin-bottom */
-            color: var(--text-dark);
-            font-weight: 700;
-        }
-
-        .step-item p {
-            color: var(--text-light);
-            font-size: 0.9em; /* Perkecil P */
-        }
-
-        /* Footer */
-        .footer {
-            background-color: var(--text-dark);
-            color: var(--white);
-            padding: 40px 0; /* Sedikit perkecil padding footer */
-            text-align: center;
-            font-size: 0.9em; /* Perkecil font footer */
-            box-shadow: 0 -4px 15px var(--shadow-light);
-        }
-
-        .footer p {
-            margin: 0;
-            line-height: 1.5;
-        }
-
-        .footer a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer a:hover {
-            color: var(--accent);
-        }
-
-        /* Keyframe Animations */
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes zoomIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes backgroundPan {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 100% 100%; }
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 992px) {
-            .hero h1 {
-                font-size: 3.2em; /* Perkecil lagi H1 untuk tablet */
-            }
-            .hero p {
-                font-size: 1.1em; /* Perkecil lagi P untuk tablet */
-            }
-            .section-heading {
-                font-size: 2.5em; /* Perkecil H2 untuk tablet */
-            }
-            .feature-grid, .steps-grid {
-                gap: 25px; /* Kurangi gap */
-            }
-            .feature-item, .step-item {
-                padding: 25px; /* Kurangi padding item */
-            }
-            .feature-item i {
-                font-size: 3em; /* Perkecil ikon fitur */
-            }
-            .step-item .step-number {
-                font-size: 2.2em; /* Perkecil nomor langkah */
-                width: 55px;
-                height: 55px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .navbar .container {
-                flex-direction: column;
-            }
-            .nav-links {
-                margin-top: 15px; /* Sedikit kurangi margin top */
-                gap: 10px; /* Kurangi gap */
-            }
-            .nav-links a {
-                font-size: 0.9em; /* Perkecil font nav link */
-            }
-            .hero {
-                padding: 60px 0; /* Kurangi padding di mobile */
-                min-height: 100vh;
-            }
-            .hero-content {
-                padding-top: 0;
-                padding-bottom: 0;
-            }
-            .hero h1 {
-                font-size: 2em; /* Perkecil H1 di mobile */
-                margin-bottom: 8px;
-            }
-            .hero p {
-                font-size: 0.9em; /* Perkecil P di mobile */
-                margin-bottom: 20px;
-            }
-            .cta-button {
-                padding: 10px 20px;
-                font-size: 1em;
-            }
-            .section-padding {
-                padding: 60px 0; /* Kurangi padding section di mobile */
-            }
-            .section-heading {
-                font-size: 2em; /* Perkecil H2 di mobile */
-                margin-bottom: 15px;
-            }
-            .feature-item i {
-                font-size: 2.8em; /* Perkecil ikon fitur di mobile */
-            }
-            .feature-item h3 {
-                font-size: 1.2em; /* Perkecil H3 fitur di mobile */
-            }
-            .feature-item p {
-                font-size: 0.85em; /* Perkecil P fitur di mobile */
-            }
-            .step-item .step-number {
-                font-size: 1.8em; /* Perkecil nomor langkah di mobile */
-                width: 45px;
-                height: 45px;
-            }
-            .step-item h3 {
-                font-size: 1.1em; /* Perkecil H3 langkah di mobile */
-            }
-            .step-item p {
-                font-size: 0.8em; /* Perkecil P langkah di mobile */
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                padding: 0 15px;
-            }
-            .logo {
-                font-size: 1.6em; /* Perkecil logo di mobile kecil */
-            }
-            .hero h1 {
-                font-size: 1.6em; /* Perkecil H1 di mobile kecil */
-            }
-            .hero p {
-                font-size: 0.8em; /* Perkecil P di mobile kecil */
-            }
-            .cta-button {
-                font-size: 0.85em;
-                padding: 8px 18px;
-            }
-            .section-heading {
-                font-size: 1.8em; /* Perkecil H2 di mobile kecil */
-            }
-            .feature-item i {
-                font-size: 2.5em;
-            }
-            .feature-item h3 {
-                font-size: 1.1em;
-            }
-            .step-item h3 {
-                font-size: 1em;
-            }
-            .step-item .step-number {
-                font-size: 1.5em;
-                width: 40px;
-                height: 40px;
-            }
-            .footer {
-                padding: 25px 0; /* Kurangi padding footer */
-                font-size: 0.8em;
-            }
-        }
+    .section-padding {
+        padding: 50px 0;
+    }
+}

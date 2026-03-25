@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <title>Selamat Datang - ProdiKu SPK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
 
@@ -15,6 +17,13 @@
     <nav class="navbar">
         <div class="container">
             <a href="/" class="logo">ProdiKu</a>
+            
+            <div class="menu-toggle" id="mobile-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
             <ul class="nav-links">
                 <li><a href="#hero">Beranda</a></li>
                 <li><a href="#features">Mengapa Kami?</a></li>
@@ -90,53 +99,78 @@
         </div>
     </section>
 
-    <section id="team" class="features section-padding text-center">
+    <section id="team" class="features section-padding text-center" style="background-color: var(--bg-dark);">
         <div class="container">
             <h2 class="section-heading">Tim ASTA</h2>
-            <div class="feature-grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">
+            <div class="feature-grid">
                 <div class="feature-item">
                     <i class="fas fa-user-circle"></i>
-                    <h3>Muhammad Azriel Kamal</h3>
-                    <p>Anggota Tim ASTA</p>
+                    <h3>Azriel Kamal</h3>
+                    <p>Anggota Kelompok</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-user-circle"></i>
-                    <h3>Muhammad Tammam Tanjung</h3>
-                    <p>Anggota Tim ASTA</p>
+                    <h3>Tammam Tanjung</h3>
+                    <p>Anggota Kelompok</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-user-circle"></i>
-                    <h3>Raflyalif Adzani Pahlevi</h3>
-                    <p>Anggota Tim ASTA</p>
+                    <h3>Raflyalif Adzani</h3>
+                    <p>Anggota Kelompok</p>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-user-circle"></i>
-                    <h3>Safina Qaida Lintang</h3>
-                    <p>Anggota Tim ASTA</p>
+                    <h3>Safina Qaida</h3>
+                    <p>Anggota Kelompok</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer class="footer">
+    <footer class="footer" style="background-color: var(--text-dark); color: white; padding: 50px 0; text-align: center;">
         <div class="container">
-            <p>Dibuat dengan <i class="fas fa-heart" style="color: #28a745;"></i> oleh <strong>Tim ASTA</strong></p>
-            <p>&copy; 2026 ProdiKu. Politeknik Negeri Jakarta. | <a href="/admin">Login Admin</a></p>
+            <p style="margin-bottom: 10px;">Dibuat dengan <i class="fas fa-heart" style="color: #28a745;"></i> oleh <strong>Tim ASTA</strong></p>
+            <p>&copy; 2026 ProdiKu. Politeknik Negeri Jakarta. | <a href="/admin" style="color: var(--primary); text-decoration: none;">Login Admin</a></p>
         </div>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Intersection Observer untuk animasi scroll
-            const observerOptions = { threshold: 0.2 };
+            
+            // 1. Tombol Toggle Menu Mobile
+            const menuToggle = document.getElementById('mobile-menu');
+            const navLinks = document.querySelector('.nav-links');
+
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+
+            // 2. Klik link menu otomatis menutup menu (khusus Mobile)
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                });
+            });
+
+            // 3. Intersection Observer untuk animasi saat di-scroll
+            const observerOptions = { 
+                threshold: 0.15,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('animated');
+                        // Berhenti mengamati setelah animasi jalan
+                        observer.unobserve(entry.target); 
                     }
                 });
             }, observerOptions);
 
+            // Target elemen yang ingin dianimasikan
             document.querySelectorAll('.section-heading, .feature-item, .step-item').forEach((el) => {
                 observer.observe(el);
             });
