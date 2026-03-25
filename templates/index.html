@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <title>Selamat Datang - ProdiKu SPK</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
-
 <body>
 
     <nav class="navbar">
@@ -26,33 +23,32 @@
 
     <section id="hero" class="hero">
         <div class="hero-content">
-            <h1>Temukan Program Studi Impianmu</h1>
-            <form action="{{ url_for('index') }}" method="POST">
-                <input type="text" name="nama" placeholder="Masukkan Nama Anda" required
-                    style="padding: 10px; border-radius: 5px; width: 250px;">
-                <button type="submit" class="cta-button">Mulai Survei</button>
+            <h1>Bingung Pilih Jurusan di PNJ?</h1>
+            <p>Gunakan Sistem Pendukung Keputusan cerdas kami untuk menemukan Program Studi yang paling sesuai dengan minat dan potensi dirimu.</p>
+            <form action="{{ url_for('mulai_survei') }}" method="POST">
+                <button type="submit" class="cta-button">Mulai Konsultasi Gratis</button>
             </form>
         </div>
     </section>
 
     <section id="features" class="features section-padding text-center">
         <div class="container">
-            <h2 class="section-heading">Mengapa Memilih ProdiKu?</h2>
+            <h2 class="section-heading">Mengapa Menggunakan ProdiKu?</h2>
             <div class="feature-grid">
                 <div class="feature-item">
-                    <i class="fas fa-brain"></i>
-                    <h3>Metode MOORA</h3>
-                    <p>Perhitungan matematis objektif untuk hasil rekomendasi yang paling akurat.</p>
+                    <i class="fas fa-microchip"></i>
+                    <h3>Algoritma MOORA</h3>
+                    <p>Menggunakan perhitungan <i>Multi-Objective Optimization on the basis of Ratio Analysis</i> untuk hasil yang objektif.</p>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-poll"></i>
-                    <h3>Survei Cepat</h3>
-                    <p>Proses pengisian hanya butuh 2 menit untuk memahami profil pendidikan Anda.</p>
+                    <i class="fas fa-user-check"></i>
+                    <h3>Personalisasi</h3>
+                    <p>Hasil rekomendasi disesuaikan dengan bobot kriteria yang Anda anggap paling penting (biaya, minat, atau prospek).</p>
                 </div>
                 <div class="feature-item">
-                    <i class="fas fa-graduation-cap"></i>
-                    <h3>Fokus PNJ</h3>
-                    <p>Rekomendasi khusus untuk program studi di Politeknik Negeri Jakarta.</p>
+                    <i class="fas fa-university"></i>
+                    <h3>Data Akurat PNJ</h3>
+                    <p>Informasi program studi terintegrasi langsung dengan profil pendidikan di Politeknik Negeri Jakarta.</p>
                 </div>
             </div>
         </div>
@@ -60,22 +56,22 @@
 
     <section id="how-it-works" class="how-it-works section-padding text-center">
         <div class="container">
-            <h2 class="section-heading">Cara Kerja Sistem</h2>
+            <h2 class="section-heading">3 Langkah Menuju Masa Depan</h2>
             <div class="steps-grid">
                 <div class="step-item">
                     <span class="step-number">1</span>
-                    <h3>Input Bobot</h3>
-                    <p>Tentukan seberapa penting kriteria seperti Minat atau Skill bagi Anda.</p>
+                    <h3>Atur Prioritas</h3>
+                    <p>Tentukan tingkat kepentingan kriteria pemilihan Anda melalui input bobot.</p>
                 </div>
                 <div class="step-item">
                     <span class="step-number">2</span>
-                    <h3>Isi Survei</h3>
-                    <p>Jawab beberapa pertanyaan singkat mengenai preferensi belajar Anda.</p>
+                    <h3>Jawab Survei</h3>
+                    <p>Ikuti survei singkat mengenai ketertarikan Anda pada bidang tertentu.</p>
                 </div>
                 <div class="step-item">
                     <span class="step-number">3</span>
-                    <h3>Lihat Hasil</h3>
-                    <p>Dapatkan urutan program studi yang paling direkomendasikan sistem.</p>
+                    <h3>Dapatkan Hasil</h3>
+                    <p>Sistem akan menampilkan peringkat prodi yang paling cocok untuk Anda pilih.</p>
                 </div>
             </div>
         </div>
@@ -84,9 +80,9 @@
     <footer class="footer">
         <div class="container text-center">
             <p>Dibuat dengan <i class="fas fa-heart" style="color: #e74c3c;"></i> oleh Tammam - PNJ 2026</p>
-<p>&copy; 2026 ProdiKu. | <a href="/admin">Login Admin</a></p>        </div>
+            <p>&copy; 2026 ProdiKu. | <a href="/admin">Portal Admin</a></p>
+        </div>
     </footer>
 
 </body>
-
 </html>
