@@ -1,46 +1,74 @@
-{% extends "admin/_base.html" %}
+{% extends "admin/base.html" %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Manajemen Program Studi</h1>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal"><i class="fas fa-plus me-2"></i> Tambah Prodi</button>
+<div class="d-md-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800 fw-bold">Manajemen Program Studi</h1>
+        <p class="text-muted small">Kelola daftar Program Studi yang menjadi alternatif rekomendasi.</p>
+    </div>
+    <button class="btn btn-green shadow-sm mt-3 mt-md-0" data-bs-toggle="modal" data-bs-target="#addModal">
+        <i class="fas fa-plus me-2"></i> Tambah Prodi
+    </button>
 </div>
 
-<div class="card shadow-sm">
-    <div class="card-body">
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
                     <tr>
-                        <th>ID</th>
-                        <th>Nama Program Studi</th>
+                        <th class="ps-4" style="width: 70px;">ID</th>
+                        <th style="width: 250px;">Nama Program Studi</th>
                         <th>Deskripsi</th>
-                        <th class="text-end">Aksi</th>
+                        <th class="text-end pe-4" style="width: 150px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for p in prodi %}
                     <tr>
-                        <td>{{ p.prodi_id }}</td>
-                        <td class="fw-bold">{{ p.nama_prodi }}</td>
-                        <td>{{ p.deskripsi }}</td>
-                        <td class="text-end">
-                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ p.prodi_id }}"><i class="fas fa-edit"></i></button>
-                            <a href="{{ url_for('admin.delete_prodi', id=p.prodi_id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus prodi ini?')"><i class="fas fa-trash"></i></a>
+                        <td class="ps-4 text-muted small">{{ p.prodi_id }}</td>
+                        <td>
+                            <div class="fw-bold text-primary">{{ p.nama_prodi }}</div>
+                        </td>
+                        <td>
+                            <div class="text-muted small text-truncate" style="max-width: 350px;" title="{{ p.deskripsi }}">
+                                {{ p.deskripsi if p.deskripsi else 'Tidak ada deskripsi.' }}
+                            </div>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-warning border-0" title="Edit" data-bs-toggle="modal" data-bs-target="#editModal{{ p.prodi_id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <a href="{{ url_for('admin.delete_prodi', id=p.prodi_id) }}" class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="return confirm('Yakin ingin menghapus prodi {{ p.nama_prodi }}?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
-                    <div class="modal fade" id="editModal{{ p.prodi_id }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
+
+                    <div class="modal fade" id="editModal{{ p.prodi_id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 shadow">
                                 <form action="{{ url_for('admin.update_prodi', id=p.prodi_id) }}" method="POST">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Edit Program Studi</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    <div class="modal-header border-bottom-0 pb-0">
+                                        <h5 class="fw-bold mt-2 ps-2">Edit Program Studi</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3"><label class="form-label">Nama Program Studi</label><input type="text" name="nama_prodi" class="form-control" value="{{ p.nama_prodi }}" required></div>
-                                        <div class="mb-3"><label class="form-label">Deskripsi</label><textarea name="deskripsi" class="form-control">{{ p.deskripsi }}</textarea></div>
+                                    <div class="modal-body p-4">
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold text-uppercase">Nama Program Studi</label>
+                                            <input type="text" name="nama_prodi" class="form-control bg-light border-0" value="{{ p.nama_prodi }}" required>
+                                        </div>
+                                        <div class="mb-0">
+                                            <label class="form-label small fw-bold text-uppercase">Deskripsi</label>
+                                            <textarea name="deskripsi" class="form-control bg-light border-0" rows="5">{{ p.deskripsi }}</textarea>
+                                        </div>
                                     </div>
-                                    <div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan Perubahan</button></div>
+                                    <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
+                                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                                        <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">Simpan Perubahan</button>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -49,19 +77,37 @@
                 </tbody>
             </table>
         </div>
+        {% if not prodi %}
+        <div class="text-center py-5">
+            <i class="fas fa-graduation-cap fa-3x text-light mb-3"></i>
+            <p class="text-muted">Belum ada data program studi.</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 
-<div class="modal fade" id="addModal" tabindex="-1">
-     <div class="modal-dialog">
-        <div class="modal-content">
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
             <form action="{{ url_for('admin.add_prodi') }}" method="POST">
-                <div class="modal-header"><h5 class="modal-title">Tambah Program Studi</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <div class="mb-3"><label class="form-label">Nama Program Studi</label><input type="text" name="nama_prodi" class="form-control" required></div>
-                    <div class="mb-3"><label class="form-label">Deskripsi</label><textarea name="deskripsi" class="form-control"></textarea></div>
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="fw-bold mt-2 ps-2">Tambah Prodi Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-primary">Tambah</button></div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase">Nama Program Studi</label>
+                        <input type="text" name="nama_prodi" class="form-control bg-light border-0" placeholder="Contoh: Teknik Informatika" required>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label small fw-bold text-uppercase">Deskripsi</label>
+                        <textarea name="deskripsi" class="form-control bg-light border-0" rows="5" placeholder="Jelaskan secara singkat profil lulusan atau fokus studi prodi ini..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">Tambah Prodi</button>
+                </div>
             </form>
         </div>
     </div>

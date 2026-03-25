@@ -1,50 +1,99 @@
-{% extends "admin/_base.html" %}
+{% extends "admin/base.html" %}
+
 {% block content %}
-<h1 class="mb-4">Dashboard</h1>
+<div class="d-sm-flex align-items-center justify-content-between mb-4 mt-2">
+    <h1 class="h3 mb-0 text-gray-800 fw-bold">Dashboard Statistik</h1>
+    <p class="text-muted small d-none d-md-block">Ringkasan data sistem ProdiKu saat ini.</p>
+</div>
+
 <div class="row">
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body d-flex align-items-center">
-                <i class="fas fa-users fa-3x text-primary me-3"></i>
-                <div>
-                    <div class="text-muted text-uppercase small">Total Pengguna</div>
-                    <div class="h4 fw-bold mb-0">{{ users_count }}</div>
+    <div class="col-xl-3 col-sm-6 mb-4">
+        <div class="card border-0 shadow-sm h-100 py-2 border-start border-primary border-4">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">
+                            Total Pengguna
+                        </div>
+                        <div class="h4 mb-0 font-weight-bold text-dark">{{ users_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300" style="opacity: 0.3;"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body d-flex align-items-center">
-                <i class="fas fa-list-ol fa-3x text-success me-3"></i>
-                <div>
-                    <div class="text-muted text-uppercase small">Jumlah Kriteria</div>
-                    <div class="h4 fw-bold mb-0">{{ kriteria_count }}</div>
+
+    <div class="col-xl-3 col-sm-6 mb-4">
+        <div class="card border-0 shadow-sm h-100 py-2 border-start border-success border-4">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">
+                            Jumlah Kriteria
+                        </div>
+                        <div class="h4 mb-0 font-weight-bold text-dark">{{ kriteria_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-list-ol fa-2x text-gray-300" style="opacity: 0.3;"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body d-flex align-items-center">
-                <i class="fas fa-graduation-cap fa-3x text-info me-3"></i>
-                <div>
-                    <div class="text-muted text-uppercase small">Jumlah Prodi</div>
-                    <div class="h4 fw-bold mb-0">{{ prodi_count }}</div>
+
+    <div class="col-xl-3 col-sm-6 mb-4">
+        <div class="card border-0 shadow-sm h-100 py-2 border-start border-info border-4">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">
+                            Jumlah Prodi
+                        </div>
+                        <div class="h4 mb-0 font-weight-bold text-dark">{{ prodi_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-graduation-cap fa-2x text-gray-300" style="opacity: 0.3;"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body d-flex align-items-center">
-                <i class="fas fa-question-circle fa-3x text-warning me-3"></i>
-                <div>
-                    <div class="text-muted text-uppercase small">Jumlah Pertanyaan</div>
-                    <div class="h4 fw-bold mb-0">{{ pertanyaan_count }}</div>
+
+    <div class="col-xl-3 col-sm-6 mb-4">
+        <div class="card border-0 shadow-sm h-100 py-2 border-start border-warning border-4">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1" style="font-size: 0.75rem; letter-spacing: 1px;">
+                            Jumlah Pertanyaan
+                        </div>
+                        <div class="h4 mb-0 font-weight-bold text-dark">{{ pertanyaan_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-question-circle fa-2x text-gray-300" style="opacity: 0.3;"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div class="row mt-2">
+    <div class="col-lg-12">
+        <div class="card shadow-sm border-0 bg-white p-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-light p-3 rounded-circle">
+                    <i class="fas fa-hand-sparkles text-warning fa-2x"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-1">Selamat datang kembali, Admin!</h5>
+                    <p class="text-muted mb-0 small">Gunakan navigasi di samping untuk mengelola data alternatif prodi dan bobot kriteria.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

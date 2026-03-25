@@ -1,74 +1,103 @@
-{% extends "admin/_base.html" %}
+{% extends "admin/base.html" %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Manajemen Pertanyaan Survei</h1>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal"><i class="fas fa-plus me-2"></i>
-        Tambah Pertanyaan</button>
+<div class="d-md-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800 fw-bold">Manajemen Pertanyaan</h1>
+        <p class="text-muted small">Kelola butir pertanyaan survei untuk setiap kriteria penilaian.</p>
+    </div>
+    <button class="btn btn-green shadow-sm mt-3 mt-md-0" data-bs-toggle="modal" data-bs-target="#addModal">
+        <i class="fas fa-plus me-2"></i> Tambah Pertanyaan
+    </button>
 </div>
 
-<div class="card shadow-sm">
-    <div class="card-body">
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
                     <tr>
-                        <th>ID</th>
-                        <th>Kriteria</th>
-                        <th>Pertanyaan</th>
-                        <th class="text-end">Aksi</th>
+                        <th class="ps-4" style="width: 70px;">ID</th>
+                        <th style="width: 180px;">Kriteria</th>
+                        <th>Teks Pertanyaan</th>
+                        <th class="text-end pe-4" style="width: 150px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for p in pertanyaan %}
                     <tr>
-                        <td>{{ p.pertanyaan_id }}</td>
-
-                        <td><span class="badge bg-secondary">{{ p.kriteria_ref.nama_kriteria if p.kriteria_ref else
-                                p.kriteria.nama_kriteria }}</span></td>
-
-                        <td>{{ p.teks_pertanyaan }}</td>
-
-                        <td class="text-end">
+                        <td class="ps-4 text-muted small">{{ p.pertanyaan_id }}</td>
+                        <td>
+                            <span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1">
+                                <i class="fas fa-tag me-1 small"></i>
+                                {{ p.kriteria_ref.nama_kriteria if p.kriteria_ref else p.kriteria.nama_kriteria }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="fw-semibold text-wrap" style="max-width: 400px;">
+                                {{ p.teks_pertanyaan }}
+                            </div>
+                            <div class="d-none d-lg-block mt-1">
+                                <span class="badge bg-light text-muted fw-normal border">A: {{ p.opsi_a[:30] }}...</span>
+                                <span class="badge bg-light text-muted fw-normal border">B: {{ p.opsi_b[:30] }}...</span>
+                                <span class="badge bg-light text-muted fw-normal border">C: {{ p.opsi_c[:30] }}...</span>
+                            </div>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-warning border-0" title="Edit" data-bs-toggle="modal" data-bs-target="#editModal{{ p.pertanyaan_id }}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <a href="{{ url_for('admin.delete_pertanyaan', id=p.pertanyaan_id) }}" class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="return confirm('Yakin ingin menghapus pertanyaan ini?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
 
-                    <div class="modal fade" id="editModal{{ p.pertanyaan_id }}" tabindex="-1">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <form action="{{ url_for('admin.update_pertanyaan', id=p.pertanyaan_id) }}"
-                                    method="POST">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Edit Pertanyaan</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <div class="modal fade" id="editModal{{ p.pertanyaan_id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content border-0 shadow">
+                                <form action="{{ url_for('admin.update_pertanyaan', id=p.pertanyaan_id) }}" method="POST">
+                                    <div class="modal-header border-bottom-0 pb-0">
+                                        <h5 class="fw-bold mt-2 ps-2">Edit Pertanyaan</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-body">
+                                    <div class="modal-body p-4">
                                         <div class="mb-3">
-                                            <label class="form-label">Kriteria Terkait</label>
-                                            <select name="kriteria_id" class="form-select" required>
+                                            <label class="form-label small fw-bold text-uppercase">Kriteria Terkait</label>
+                                            <select name="kriteria_id" class="form-select bg-light border-0" required>
                                                 {% for k in kriteria_list %}
-                                                <option value="{{ k.kriteria_id }}" {% if k.kriteria_id==p.kriteria_id
-                                                    %}selected{% endif %}>{{ k.nama_kriteria }}</option>
+                                                <option value="{{ k.kriteria_id }}" {% if k.kriteria_id == p.kriteria_id %}selected{% endif %}>
+                                                    {{ k.nama_kriteria }}
+                                                </option>
                                                 {% endfor %}
                                             </select>
                                         </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Teks Pertanyaan</label>
-                                            <textarea name="pertanyaan" class="form-control"
-                                                required>{{ p.teks_pertanyaan }}</textarea>
+                                        <div class="mb-4">
+                                            <label class="form-label small fw-bold text-uppercase">Teks Pertanyaan</label>
+                                            <textarea name="pertanyaan" class="form-control bg-light border-0" rows="3" required>{{ p.teks_pertanyaan }}</textarea>
                                         </div>
-                                        <hr>
-                                        <div class="mb-3"><label class="form-label">Opsi A</label><input type="text"
-                                                name="opsi_a" class="form-control" value="{{ p.opsi_a }}" required>
-                                        </div>
-                                        <div class="mb-3"><label class="form-label">Opsi B</label><input type="text"
-                                                name="opsi_b" class="form-control" value="{{ p.opsi_b }}" required>
-                                        </div>
-                                        <div class="mb-3"><label class="form-label">Opsi C</label><input type="text"
-                                                name="opsi_c" class="form-control" value="{{ p.opsi_c }}" required>
+                                        <h6 class="fw-bold text-primary mb-3"><i class="fas fa-list-ul me-2"></i>Opsi Jawaban</h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-bold">Opsi A</label>
+                                                <input type="text" name="opsi_a" class="form-control border-0 bg-light" value="{{ p.opsi_a }}" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-bold">Opsi B</label>
+                                                <input type="text" name="opsi_b" class="form-control border-0 bg-light" value="{{ p.opsi_b }}" required>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label small fw-bold">Opsi C</label>
+                                                <input type="text" name="opsi_c" class="form-control border-0 bg-light" value="{{ p.opsi_c }}" required>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="modal-footer"><button type="submit" class="btn btn-primary">Simpan
-                                            Perubahan</button></div>
+                                    <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
+                                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                                        <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">Simpan Perubahan</button>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -77,38 +106,57 @@
                 </tbody>
             </table>
         </div>
+        {% if not pertanyaan %}
+        <div class="text-center py-5">
+            <i class="fas fa-question fa-3x text-light mb-3"></i>
+            <p class="text-muted">Belum ada pertanyaan yang dibuat.</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 
-<div class="modal fade" id="addModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+<div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
             <form action="{{ url_for('admin.add_pertanyaan') }}" method="POST">
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Pertanyaan Baru</h5><button type="button" class="btn-close"
-                        data-bs-dismiss="modal"></button>
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="fw-bold mt-2 ps-2">Tambah Pertanyaan Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="mb-3">
-                        <label class="form-label">Kriteria Terkait</label>
-                        <select name="kriteria_id" class="form-select" required>
+                        <label class="form-label small fw-bold text-uppercase">Kriteria Terkait</label>
+                        <select name="kriteria_id" class="form-select bg-light border-0" required>
                             <option value="" disabled selected>Pilih Kriteria...</option>
                             {% for k in kriteria_list %}
                             <option value="{{ k.kriteria_id }}">{{ k.nama_kriteria }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="mb-3"><label class="form-label">Teks Pertanyaan</label><textarea name="pertanyaan"
-                            class="form-control" placeholder="Masukkan teks pertanyaan..." required></textarea></div>
-                    <hr>
-                    <div class="mb-3"><label class="form-label">Opsi A</label><input type="text" name="opsi_a"
-                            class="form-control" placeholder="Teks untuk pilihan A" required></div>
-                    <div class="mb-3"><label class="form-label">Opsi B</label><input type="text" name="opsi_b"
-                            class="form-control" placeholder="Teks untuk pilihan B" required></div>
-                    <div class="mb-3"><label class="form-label">Opsi C</label><input type="text" name="opsi_c"
-                            class="form-control" placeholder="Teks untuk pilihan C" required></div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-uppercase">Teks Pertanyaan</label>
+                        <textarea name="pertanyaan" class="form-control bg-light border-0" rows="3" placeholder="Apa yang ingin ditanyakan?" required></textarea>
+                    </div>
+                    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-list-ul me-2"></i>Opsi Jawaban</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Opsi A</label>
+                            <input type="text" name="opsi_a" class="form-control border-0 bg-light" placeholder="Jawaban A" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Opsi B</label>
+                            <input type="text" name="opsi_b" class="form-control border-0 bg-light" placeholder="Jawaban B" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Opsi C</label>
+                            <input type="text" name="opsi_c" class="form-control border-0 bg-light" placeholder="Jawaban C" required>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-primary">Tambah</button></div>
+                <div class="modal-footer border-top-0 pt-0 px-4 pb-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">Tambah Pertanyaan</button>
+                </div>
             </form>
         </div>
     </div>
