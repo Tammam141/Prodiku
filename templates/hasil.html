@@ -283,63 +283,70 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
-        async function downloadPDF() {
-            const { jsPDF } = window.jspdf;
-            const element = document.querySelector("#report-content");
-            const btnArea = document.querySelector(".btn-container");
+ async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const element = document.querySelector("#report-content"); 
+    const btnArea = document.querySelector(".btn-container");
+    
+    // Sembunyikan tombol
+    btnArea.style.opacity = "0";
 
-            // 1. Sembunyikan tombol agar tidak ikut terfoto
-            btnArea.style.opacity = "0";
+    try {
+        const canvas = await html2canvas(element, { 
+            scale: 4, // Resolusi tinggi
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            onclone: (documentClone) => {
+                const header = documentClone.querySelector(".header");
+                const container = documentClone.querySelector("#report-content");
+                
+                // 1. Perbaiki Header (Penyebab utama teks pudar)
+                // Paksa background menjadi warna solid, bukan gradient
+                header.style.background = "#1e7e34"; 
+                header.style.backgroundImage = "none";
+                header.style.color = "#ffffff";
 
-            try {
-                const canvas = await html2canvas(element, {
-                    scale: 4, // Tingkatkan ke 4 untuk ketajaman ekstra
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: "#ffffff",
-                    letterRendering: true, // Membantu rendering teks lebih presisi
-                    allowTaint: false,
-                    onclone: (documentClone) => {
-                        const containerClone = documentClone.querySelector("#report-content");
-                        const header = documentClone.querySelector(".header");
-                        const cards = documentClone.querySelectorAll(".result-card");
-
-                        // Berikan styling khusus untuk versi cetak agar lebih solid
-                        containerClone.style.transform = "none";
-                        containerClone.style.margin = "0";
-                        containerClone.style.width = "650px"; // Kunci lebar agar tidak responsif saat di-render
-
-                        header.style.background = "#1e7e34"; // Hijau solid (gradasi sering pecah di PDF)
-
-                        cards.forEach(card => {
-                            card.style.boxShadow = "none";
-                            card.style.border = "1px solid #cccccc";
-                            // Pastikan kontras teks maksimal
-                            const title = card.querySelector("h3");
-                            if (title) title.style.color = "#000000";
-                        });
-                    }
+                // 2. Pastikan kontras teks di dalam header
+                const headerTexts = header.querySelectorAll("h2, p, strong");
+                headerTexts.forEach(el => {
+                    el.style.color = "#ffffff";
+                    el.style.opacity = "1";
                 });
 
-                const imgData = canvas.toDataURL('image/png', 1.0);
-                const pdf = new jsPDF('p', 'mm', 'a4');
-
-                const imgProps = pdf.getImageProperties(imgData);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-                // Gunakan kompresi 'FAST' agar file tidak terlalu berat tapi tetap tajam
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-                pdf.save(`Hasil_Prodi_{{ user.nama }}.pdf`);
-
-            } catch (error) {
-                console.error("Gagal membuat PDF:", error);
-                alert("Terjadi kesalahan saat mengunduh PDF.");
-            } finally {
-                // 4. Kembalikan tombol
-                btnArea.style.opacity = "1";
+                // 3. Perbaiki Kartu (Agar teks hitam pekat)
+                const cards = documentClone.querySelectorAll(".result-card");
+                cards.forEach(card => {
+                    card.style.boxShadow = "none";
+                    card.style.border = "1px solid #ddd";
+                    
+                    // Paksa semua teks di dalam kartu menjadi hitam/gelap
+                    const title = card.querySelector("h3");
+                    const desc = card.querySelector("p");
+                    const score = card.querySelector(".score-box strong");
+                    
+                    if(title) title.style.setProperty("color", "#000000", "important");
+                    if(desc) desc.style.setProperty("color", "#333333", "important");
+                    if(score) score.style.setProperty("color", "#1e7e34", "important");
+                });
             }
-        }</script>
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('Hasil_Rekomendasi_Prodi.pdf');
+
+    } catch (error) {
+        console.error("PDF Error:", error);
+    } finally {
+        btnArea.style.opacity = "1";
+    }
+}
+</script>
 
 </body>
 
