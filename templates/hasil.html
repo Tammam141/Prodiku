@@ -279,38 +279,96 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <script>
-        function downloadPDF() {
-            const element = document.getElementById('report-content');
-            const btnArea = document.querySelector(".btn-container");
+<script>
+async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const element = document.querySelector("#report-content"); 
+    const btnArea = document.querySelector(".btn-container");
 
-            // 1. Sembunyikan tombol agar tidak ikut terfoto
-            btnArea.style.visibility = "hidden";
+    // sembunyikan tombol
+    btnArea.style.opacity = "0";
 
-            // 2. Konfigurasi PDF agar tajam dan pas di kertas A4
-            const opt = {
-                margin: 0,
-                filename: 'Hasil_Prodi_{{ user.nama }}.pdf',
-                image: { type: 'jpeg', quality: 1 }, // Quality 1 = Maksimal
-                html2canvas: {
-                    scale: 4,
-                    useCORS: true,
-                    letterRendering: true,
-                    backgroundColor: '#ffffff' // Memastikan tidak ada area transparan
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+    try {
+        const canvas = await html2canvas(element, { 
+            scale: 3, // optimal (tidak terlalu berat tapi tetap tajam)
+            useCORS: true,
+            backgroundColor: "#ffffff",
+            scrollY: -window.scrollY,
 
-            // 3. Jalankan proses download
-            html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
-                // Kembalikan tombol setelah selesai
-                btnArea.style.visibility = "visible";
-            }).save();
+            onclone: (documentClone) => {
+                const header = documentClone.querySelector(".header");
+                const container = documentClone.querySelector("#report-content");
+
+                // fix background utama
+                container.style.background = "#ffffff";
+                container.style.boxShadow = "none";
+
+                // fix header biar tidak pudar
+                header.style.background = "#1e7e34";
+                header.style.backgroundImage = "none";
+                header.style.color = "#ffffff";
+
+                const headerTexts = header.querySelectorAll("h2, p, strong");
+                headerTexts.forEach(el => {
+                    el.style.color = "#ffffff";
+                    el.style.opacity = "1";
+                });
+
+                // fix card biar teks tajam
+                const cards = documentClone.querySelectorAll(".result-card");
+                cards.forEach(card => {
+                    card.style.boxShadow = "none";
+                    card.style.border = "1px solid #ddd";
+                    card.style.background = "#ffffff";
+
+                    const title = card.querySelector("h3");
+                    const desc = card.querySelector("p");
+                    const score = card.querySelector(".score-box strong");
+
+                    if(title) title.style.setProperty("color", "#000000", "important");
+                    if(desc) desc.style.setProperty("color", "#333333", "important");
+                    if(score) score.style.setProperty("color", "#1e7e34", "important");
+                });
+            }
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+
+        const pdf = new jsPDF('p', 'mm', 'a4');
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        const imgWidth = pdfWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // halaman pertama
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+
+        // kalau kepanjangan → tambah halaman
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pdfHeight;
         }
-    </script>
+
+        pdf.save('Hasil_Rekomendasi_Prodi.pdf');
+
+    } catch (error) {
+        console.error("PDF Error:", error);
+    } finally {
+        btnArea.style.opacity = "1";
+    }
+}
+</script>
 
 </body>
 
