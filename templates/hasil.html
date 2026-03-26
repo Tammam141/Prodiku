@@ -5,14 +5,14 @@
     <meta charset="UTF-8">
     <title>Hasil Rekomendasi - ProdiKu</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
     <style>
         :root {
             --primary-dark: #1e7e34;
-            /* Hijau Solid */
             --secondary-dark: #1565c0;
-            /* Biru Solid */
             --text-dark: #2c3e50;
             --bg-body: #f4f7f6;
         }
@@ -34,7 +34,6 @@
             padding: 20px;
         }
 
-        /* Container Utama */
         .container {
             max-width: 650px;
             width: 100%;
@@ -42,25 +41,11 @@
             border-radius: 24px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
             overflow: hidden;
-            animation: slideUp 0.6s ease-out;
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Header dengan Kontras Tinggi (Anti-Pudar) */
         .header {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
-            color: #ffffff;
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary-dark));
+            color: #fff;
             padding: 45px 30px;
             text-align: center;
         }
@@ -68,21 +53,12 @@
         .header h2 {
             font-size: 1.8rem;
             font-weight: 800;
-            margin-bottom: 8px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        }
-
-        .header p {
-            font-size: 0.95rem;
-            opacity: 0.9;
-            font-weight: 400;
         }
 
         .content {
             padding: 30px 25px;
         }
 
-        /* Card List Style */
         .result-card {
             display: flex;
             align-items: center;
@@ -91,7 +67,6 @@
             border-radius: 18px;
             padding: 20px;
             margin-bottom: 15px;
-            transition: transform 0.3s ease;
         }
 
         .rank-circle {
@@ -103,86 +78,21 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 1.2rem;
-            color: var(--text-dark);
             margin-right: 18px;
-            flex-shrink: 0;
-            border: 2px solid #eee;
         }
 
-        /* Highlight Rank 1 */
         .rank-1 {
             border-color: #2ecc71;
-            background: linear-gradient(to right, #fafffa, #ffffff);
-            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.1);
-        }
-
-        .rank-1 .rank-circle {
-            background: #2ecc71;
-            color: #fff;
-            border-color: #27ae60;
         }
 
         .prodi-info {
             flex-grow: 1;
         }
 
-        .prodi-info h3 {
-            font-size: 1.05rem;
-            color: #2c3e50;
-            font-weight: 700;
-            margin-bottom: 3px;
-        }
-
-        .prodi-info p {
-            font-size: 0.8rem;
-            color: #555;
-            line-height: 1.4;
-        }
-
         .score-box {
             text-align: right;
-            margin-left: 10px;
-            min-width: 80px;
         }
 
-        .score-box strong {
-            display: block;
-            font-size: 1.1rem;
-            color: var(--primary-dark);
-        }
-
-        .score-label {
-            font-size: 0.6rem;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 6px;
-            font-size: 0.65rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-top: 6px;
-            color: #fff;
-        }
-
-        .bg-baik {
-            background: #2ecc71;
-        }
-
-        .bg-cukup {
-            background: #3498db;
-        }
-
-        .bg-kurang {
-            background: #95a5a6;
-        }
-
-        /* Tombol */
         .btn-container {
             display: flex;
             gap: 12px;
@@ -195,181 +105,135 @@
             border-radius: 14px;
             color: white;
             font-weight: 700;
-            text-decoration: none;
-            text-align: center;
             border: none;
             cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
         }
 
         .btn-home {
-            background-color: #f1f2f6;
-            color: #2c3e50;
+            background: #ccc;
+            color: #000;
         }
 
         .btn-simpan {
-            background-color: #e74c3c;
-            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.2);
+            background: #e74c3c;
         }
 
-        .btn:hover {
-            transform: translateY(-3px);
-            opacity: 0.9;
+        /* 🔥 MODE KHUSUS PDF */
+        .pdf-mode * {
+            opacity: 1 !important;
+            filter: none !important;
+            text-shadow: none !important;
         }
 
-        @media (max-width: 500px) {
-            .btn-container {
-                flex-direction: column;
-            }
+        .pdf-mode body {
+            background: #ffffff !important;
+        }
 
-            .header {
-                padding: 35px 20px;
-            }
+        .pdf-mode .container {
+            box-shadow: none !important;
+            background: #ffffff !important;
+        }
+
+        .pdf-mode .header {
+            background: #1e7e34 !important;
+            background-image: none !important;
+        }
+
+        .pdf-mode .header * {
+            color: #ffffff !important;
+        }
+
+        .pdf-mode .result-card {
+            background: #ffffff !important;
+            border: 1px solid #ddd !important;
+            box-shadow: none !important;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container" id="report-content">
-        <div class="header">
-            <p>HASIL ANALISIS MOORA</p>
-            <h2>Rekomendasi Program Studi</h2>
-            <p>Halo <strong>{{ user.nama }}</strong>, temukan masa depanmu di sini!</p>
-        </div>
-
-        <div class="content">
-            {% for h in hasil %}
-            <div class="result-card {% if loop.index == 1 %}rank-1{% endif %}">
-                <div class="rank-circle">{{ loop.index }}</div>
-
-                <div class="prodi-info">
-                    <h3>{{ h.nama_prodi }}</h3>
-                    <p>{{ h.deskripsi[:95] }}...</p>
-
-                    {% if loop.index == 1 %}
-                    <span class="status-badge bg-baik">Pilihan Terbaik</span>
-                    {% elif loop.index == 2 %}
-                    <span class="status-badge bg-cukup">Potensi Bagus</span>
-                    {% else %}
-                    <span class="status-badge bg-kurang">Alternatif</span>
-                    {% endif %}
-                </div>
-
-                <div class="score-box">
-                    <strong>{{ "%.4f"|format(h.skor_akhir) }}</strong>
-                    <span class="score-label">SKOR</span>
-                </div>
-            </div>
-            {% endfor %}
-
-            <div class="btn-container">
-                <a href="{{ url_for('index') }}" class="btn btn-home">
-                    <i class="fas fa-undo"></i> Ulangi
-                </a>
-                <button onclick="downloadPDF()" class="btn btn-simpan">
-                    <i class="fas fa-file-pdf"></i> Download PDF
-                </button>
-            </div>
-        </div>
+<div class="container" id="report-content">
+    <div class="header">
+        <p>HASIL ANALISIS MOORA</p>
+        <h2>Rekomendasi Program Studi</h2>
+        <p>Halo <strong>{{ user.nama }}</strong></p>
     </div>
 
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <div class="content">
+        {% for h in hasil %}
+        <div class="result-card {% if loop.index == 1 %}rank-1{% endif %}">
+            <div class="rank-circle">{{ loop.index }}</div>
+
+            <div class="prodi-info">
+                <h3>{{ h.nama_prodi }}</h3>
+                <p>{{ h.deskripsi[:95] }}...</p>
+            </div>
+
+            <div class="score-box">
+                <strong>{{ "%.4f"|format(h.skor_akhir) }}</strong>
+                <span>SKOR</span>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="btn-container">
+            <a href="{{ url_for('index') }}" class="btn btn-home">Ulangi</a>
+            <button onclick="downloadPDF()" class="btn btn-simpan">Download PDF</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
 async function downloadPDF() {
     const { jsPDF } = window.jspdf;
-    const element = document.querySelector("#report-content"); 
+    const element = document.querySelector("#report-content");
     const btnArea = document.querySelector(".btn-container");
 
-    btnArea.style.display = "none"; // lebih aman daripada opacity
+    document.body.classList.add("pdf-mode");
+    btnArea.style.display = "none";
 
     try {
-        const canvas = await html2canvas(element, { 
-            scale: 3,
-            useCORS: true,
-            backgroundColor: "#ffffff",
-            removeContainer: true,
-            logging: false,
-
-            onclone: (doc) => {
-                const container = doc.querySelector("#report-content");
-
-                // 🔥 PAKSA SEMUA BACKGROUND PUTIH
-                doc.body.style.background = "#ffffff";
-                container.style.background = "#ffffff";
-                container.style.opacity = "1";
-
-                // 🔥 HAPUS SEMUA YANG BIKIN PUDAR
-                const all = doc.querySelectorAll("*");
-                all.forEach(el => {
-                    el.style.opacity = "1";
-                    el.style.filter = "none";
-                    el.style.textShadow = "none";
-                });
-
-                // 🔥 HEADER FIX (INI PENYEBAB UTAMA)
-                const header = doc.querySelector(".header");
-                header.style.background = "#1e7e34";
-                header.style.backgroundImage = "none";
-
-                header.querySelectorAll("*").forEach(el => {
-                    el.style.color = "#ffffff";
-                    el.style.opacity = "1";
-                });
-
-                // 🔥 CARD FIX
-                const cards = doc.querySelectorAll(".result-card");
-                cards.forEach(card => {
-                    card.style.background = "#ffffff";
-                    card.style.boxShadow = "none";
-                    card.style.border = "1px solid #ccc";
-
-                    card.querySelectorAll("*").forEach(el => {
-                        el.style.opacity = "1";
-                    });
-                });
-            }
+        const canvas = await html2canvas(element, {
+            scale: 2.5,
+            backgroundColor: "#ffffff"
         });
 
-        const imgData = canvas.toDataURL('image/jpeg', 1.0); // 🔥 penting: JPEG biar solid
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
 
         const pdf = new jsPDF('p', 'mm', 'a4');
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
-        const imgWidth = pdfWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const imgHeight = (canvas.height * pdfWidth) / canvas.width;
 
         let heightLeft = imgHeight;
         let position = 0;
 
-        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
         heightLeft -= pdfHeight;
 
         while (heightLeft > 0) {
             position = heightLeft - imgHeight;
             pdf.addPage();
-            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
             heightLeft -= pdfHeight;
         }
 
-        pdf.save('Hasil_Rekomendasi_Prodi.pdf');
+        pdf.save("Hasil_Rekomendasi_Prodi.pdf");
 
-    } catch (error) {
-        console.error("PDF Error:", error);
+    } catch (e) {
+        console.error(e);
     } finally {
+        document.body.classList.remove("pdf-mode");
         btnArea.style.display = "flex";
     }
 }
 </script>
 
 </body>
-
 </html>
