@@ -281,61 +281,63 @@
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script>
 async function downloadPDF() {
     const { jsPDF } = window.jspdf;
     const element = document.querySelector("#report-content"); 
     const btnArea = document.querySelector(".btn-container");
 
-    // sembunyikan tombol
-    btnArea.style.opacity = "0";
+    btnArea.style.display = "none"; // lebih aman daripada opacity
 
     try {
         const canvas = await html2canvas(element, { 
-            scale: 3, // optimal (tidak terlalu berat tapi tetap tajam)
+            scale: 3,
             useCORS: true,
             backgroundColor: "#ffffff",
-            scrollY: -window.scrollY,
+            removeContainer: true,
+            logging: false,
 
-            onclone: (documentClone) => {
-                const header = documentClone.querySelector(".header");
-                const container = documentClone.querySelector("#report-content");
+            onclone: (doc) => {
+                const container = doc.querySelector("#report-content");
 
-                // fix background utama
+                // 🔥 PAKSA SEMUA BACKGROUND PUTIH
+                doc.body.style.background = "#ffffff";
                 container.style.background = "#ffffff";
-                container.style.boxShadow = "none";
+                container.style.opacity = "1";
 
-                // fix header biar tidak pudar
+                // 🔥 HAPUS SEMUA YANG BIKIN PUDAR
+                const all = doc.querySelectorAll("*");
+                all.forEach(el => {
+                    el.style.opacity = "1";
+                    el.style.filter = "none";
+                    el.style.textShadow = "none";
+                });
+
+                // 🔥 HEADER FIX (INI PENYEBAB UTAMA)
+                const header = doc.querySelector(".header");
                 header.style.background = "#1e7e34";
                 header.style.backgroundImage = "none";
-                header.style.color = "#ffffff";
 
-                const headerTexts = header.querySelectorAll("h2, p, strong");
-                headerTexts.forEach(el => {
+                header.querySelectorAll("*").forEach(el => {
                     el.style.color = "#ffffff";
                     el.style.opacity = "1";
                 });
 
-                // fix card biar teks tajam
-                const cards = documentClone.querySelectorAll(".result-card");
+                // 🔥 CARD FIX
+                const cards = doc.querySelectorAll(".result-card");
                 cards.forEach(card => {
-                    card.style.boxShadow = "none";
-                    card.style.border = "1px solid #ddd";
                     card.style.background = "#ffffff";
+                    card.style.boxShadow = "none";
+                    card.style.border = "1px solid #ccc";
 
-                    const title = card.querySelector("h3");
-                    const desc = card.querySelector("p");
-                    const score = card.querySelector(".score-box strong");
-
-                    if(title) title.style.setProperty("color", "#000000", "important");
-                    if(desc) desc.style.setProperty("color", "#333333", "important");
-                    if(score) score.style.setProperty("color", "#1e7e34", "important");
+                    card.querySelectorAll("*").forEach(el => {
+                        el.style.opacity = "1";
+                    });
                 });
             }
         });
 
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL('image/jpeg', 1.0); // 🔥 penting: JPEG biar solid
 
         const pdf = new jsPDF('p', 'mm', 'a4');
 
@@ -348,15 +350,13 @@ async function downloadPDF() {
         let heightLeft = imgHeight;
         let position = 0;
 
-        // halaman pertama
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
         heightLeft -= pdfHeight;
 
-        // kalau kepanjangan → tambah halaman
         while (heightLeft > 0) {
             position = heightLeft - imgHeight;
             pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
             heightLeft -= pdfHeight;
         }
 
@@ -365,7 +365,7 @@ async function downloadPDF() {
     } catch (error) {
         console.error("PDF Error:", error);
     } finally {
-        btnArea.style.opacity = "1";
+        btnArea.style.display = "flex";
     }
 }
 </script>
