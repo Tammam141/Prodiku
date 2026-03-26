@@ -279,74 +279,74 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
- async function downloadPDF() {
-    const { jsPDF } = window.jspdf;
-    const element = document.querySelector("#report-content"); 
-    const btnArea = document.querySelector(".btn-container");
-    
-    // Sembunyikan tombol
-    btnArea.style.opacity = "0";
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const element = document.querySelector("#report-content");
+            const btnArea = document.querySelector(".btn-container");
 
-    try {
-        const canvas = await html2canvas(element, { 
-            scale: 4, // Resolusi tinggi
-            useCORS: true,
-            backgroundColor: "#ffffff",
-            onclone: (documentClone) => {
-                const header = documentClone.querySelector(".header");
-                const container = documentClone.querySelector("#report-content");
-                
-                // 1. Perbaiki Header (Penyebab utama teks pudar)
-                // Paksa background menjadi warna solid, bukan gradient
-                header.style.background = "#1e7e34"; 
-                header.style.backgroundImage = "none";
-                header.style.color = "#ffffff";
+            // Sembunyikan tombol
+            btnArea.style.opacity = "0";
 
-                // 2. Pastikan kontras teks di dalam header
-                const headerTexts = header.querySelectorAll("h2, p, strong");
-                headerTexts.forEach(el => {
-                    el.style.color = "#ffffff";
-                    el.style.opacity = "1";
+            try {
+                const canvas = await html2canvas(element, {
+                    scale: 4, // Resolusi tinggi
+                    useCORS: true,
+                    backgroundColor: "#ffffff",
+                    onclone: (documentClone) => {
+                        const header = documentClone.querySelector(".header");
+                        const container = documentClone.querySelector("#report-content");
+
+                        // 1. Perbaiki Header (Penyebab utama teks pudar)
+                        // Paksa background menjadi warna solid, bukan gradient
+                        header.style.background = "#1e7e34";
+                        header.style.backgroundImage = "none";
+                        header.style.color = "#ffffff";
+
+                        // 2. Pastikan kontras teks di dalam header
+                        const headerTexts = header.querySelectorAll("h2, p, strong");
+                        headerTexts.forEach(el => {
+                            el.style.color = "#ffffff";
+                            el.style.opacity = "1";
+                        });
+
+                        // 3. Perbaiki Kartu (Agar teks hitam pekat)
+                        const cards = documentClone.querySelectorAll(".result-card");
+                        cards.forEach(card => {
+                            card.style.boxShadow = "none";
+                            card.style.border = "1px solid #ddd";
+
+                            // Paksa semua teks di dalam kartu menjadi hitam/gelap
+                            const title = card.querySelector("h3");
+                            const desc = card.querySelector("p");
+                            const score = card.querySelector(".score-box strong");
+
+                            if (title) title.style.setProperty("color", "#000000", "important");
+                            if (desc) desc.style.setProperty("color", "#333333", "important");
+                            if (score) score.style.setProperty("color", "#1e7e34", "important");
+                        });
+                    }
                 });
 
-                // 3. Perbaiki Kartu (Agar teks hitam pekat)
-                const cards = documentClone.querySelectorAll(".result-card");
-                cards.forEach(card => {
-                    card.style.boxShadow = "none";
-                    card.style.border = "1px solid #ddd";
-                    
-                    // Paksa semua teks di dalam kartu menjadi hitam/gelap
-                    const title = card.querySelector("h3");
-                    const desc = card.querySelector("p");
-                    const score = card.querySelector(".score-box strong");
-                    
-                    if(title) title.style.setProperty("color", "#000000", "important");
-                    if(desc) desc.style.setProperty("color", "#333333", "important");
-                    if(score) score.style.setProperty("color", "#1e7e34", "important");
-                });
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save('Hasil_Rekomendasi_Prodi.pdf');
+
+            } catch (error) {
+                console.error("PDF Error:", error);
+            } finally {
+                btnArea.style.opacity = "1";
             }
-        });
-
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save('Hasil_Rekomendasi_Prodi.pdf');
-
-    } catch (error) {
-        console.error("PDF Error:", error);
-    } finally {
-        btnArea.style.opacity = "1";
-    }
-}
-</script>
+        }
+    </script>
 
 </body>
 
